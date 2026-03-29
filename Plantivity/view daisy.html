@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Daisy details — Plantivity</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="choose-timer-body">
+    <main class="choose-timer-main view-tulip-main" aria-label="Daisy details">
+      <img
+        class="choose-timer-bg"
+        src="assets/background color 5.png"
+        alt=""
+      />
+
+      <div class="view-timer-stack">
+        <div class="view-timer-meta-box view-timer-meta-outer" aria-label="Timer details">
+          <div
+            id="view-timer-meta-date"
+            class="view-timer-meta-line"
+            aria-label="Date timer happened"
+          ></div>
+        </div>
+
+        <div class="view-timer-flower-stage">
+          <img
+            class="view-timer-flower-hero"
+            src="assets/daisy 1.png"
+            alt=""
+          />
+        </div>
+
+        <div class="view-timer-artboard">
+          <img
+            class="view-timer-pack-img"
+            src="assets/pack.png"
+            alt=""
+            aria-hidden="true"
+          />
+
+          <div class="view-timer-face">
+            <div class="view-timer-title-wrap">
+              <div
+                id="view-timer-title"
+                class="view-timer-title"
+                aria-label="Timer Title"
+              ></div>
+            </div>
+
+            <div class="view-timer-body-wrap">
+              <div
+                id="view-timer-description"
+                class="view-timer-description"
+                aria-label="Enter description"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <footer class="choose-timer-footer view-timer-footer">
+          <a class="choose-timer-leaf-link" href="index.html">
+            <img
+              class="choose-timer-leaf"
+              src="assets/leaf logo 1.png"
+              alt="Back to home"
+              width="48"
+              height="50"
+            />
+          </a>
+          <a
+            class="view-timer-delete-link"
+            href="delete flower confirm.html"
+            aria-label="Delete this timer"
+          >
+            <img
+              class="view-timer-delete-icon"
+              src="assets/delete.png"
+              alt=""
+            />
+          </a>
+        </footer>
+      </div>
+    </main>
+
+    <script>
+      (function () {
+        var params = new URLSearchParams(window.location.search);
+        var id = params.get("id");
+
+        var titleEl = document.getElementById("view-timer-title");
+        var descEl = document.getElementById("view-timer-description");
+        var metaDateEl = document.getElementById("view-timer-meta-date");
+
+        if (!id || !titleEl || !descEl) return;
+
+        var gardenKey = "plantivityGardenDaisies";
+        var listRaw = localStorage.getItem(gardenKey);
+        var daisies = [];
+        if (listRaw) {
+          try {
+            daisies = JSON.parse(listRaw);
+          } catch (err) {
+            daisies = [];
+          }
+        }
+
+        if (!Array.isArray(daisies)) return;
+
+        var item = daisies.find(function (t) {
+          return t && t.id === id;
+        });
+
+        if (!item) return;
+
+        titleEl.textContent = item.title || "";
+        descEl.textContent = item.description || "";
+
+        // Also mirror the values into the same keys used by the edit screen.
+        // This makes it easier to implement “edit” later without changing the data model.
+        localStorage.setItem("plantivityDaisyTitle", item.title || "");
+        localStorage.setItem(
+          "plantivityDaisyDescription",
+          item.description || ""
+        );
+        localStorage.setItem("plantivitySelectedDaisyId", item.id);
+
+        localStorage.setItem("plantivityDeleteFlower", "daisy");
+        localStorage.setItem("plantivityDeleteId", item.id);
+        localStorage.setItem("plantivityDeleteTitle", item.title || "");
+        localStorage.setItem(
+          "plantivityDeleteDescription",
+          item.description || ""
+        );
+
+        function pad2(n) {
+          return String(n).padStart(2, "0");
+        }
+
+        function formatDate(createdAt) {
+          var d = new Date(createdAt);
+          if (!d || isNaN(d.getTime())) return "";
+          var mm = pad2(d.getMonth() + 1);
+          var dd = pad2(d.getDate());
+          var yyyy = d.getFullYear();
+          return mm + "/" + dd + "/" + yyyy;
+        }
+
+        if (metaDateEl) {
+          metaDateEl.textContent = item.createdAt
+            ? formatDate(item.createdAt)
+            : "";
+        }
+      })();
+    </script>
+  </body>
+</html>
+

@@ -1,0 +1,1423 @@
+@import url("https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500&display=swap");
+
+/* iPhone 14 Pro logical frame — same across index, splash, choose/view/edit, congrats, etc. */
+:root {
+  --app-frame-w: 393px;
+  --app-frame-h: 852px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.splash-body {
+  align-items: center;
+  background: #f6f6f6;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 0;
+}
+
+/* iPhone 14 Pro logical size: 393 × 852 pt (physical 1179 × 2556 @3×) */
+.splash-root {
+  opacity: 1;
+  transition: opacity 0.45s ease;
+}
+
+.splash-root.splash-fade-out {
+  opacity: 0;
+}
+
+.splash-main {
+  background: #07540c;
+  border: 1px solid #000;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  height: min(var(--app-frame-h), 100vh);
+  height: min(var(--app-frame-h), 100dvh);
+  max-height: min(var(--app-frame-h), 100vh);
+  max-height: min(var(--app-frame-h), 100dvh);
+  overflow: hidden;
+  position: relative;
+  width: var(--app-frame-w);
+}
+
+.splash-background-texture {
+  height: 100%;
+  left: 0;
+  object-fit: cover;
+  object-position: center;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.splash-content {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  justify-content: center;
+  padding: 0 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.splash-logo-img {
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  max-width: 72px;
+  object-fit: contain;
+  width: 58px;
+}
+
+.splash-title {
+  color: #fff;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: 48px;
+  font-weight: 500;
+  letter-spacing: -0.528px;
+  line-height: 1.2;
+  margin: 0;
+  text-align: center;
+}
+
+.index-body {
+  align-items: center;
+  background: #f6f6f6;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 0;
+}
+
+/* Scrollable phone frame — visible height matches other screens (≤ 852, ≤ viewport) */
+.index-scroll {
+  border: 1px solid #000;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  max-height: min(var(--app-frame-h), 100vh);
+  max-height: min(var(--app-frame-h), 100dvh);
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  width: var(--app-frame-w);
+}
+
+/* Source art 1678px tall: soil y≈360, band1 223px, lines ~38px, further bands 229px */
+.index-main {
+  --index-screen-h: var(--app-frame-h);
+  --index-art-h: 1678;
+  --index-soil-start: calc(360 * var(--index-screen-h) / var(--index-art-h));
+  --index-row-1-h: calc(223 * var(--index-screen-h) / var(--index-art-h));
+  --index-row-h: calc(229 * var(--index-screen-h) / var(--index-art-h));
+  --index-line-h: calc(38 * var(--index-screen-h) / var(--index-art-h));
+  --index-flower-max: calc(var(--index-row-h) * 0.82);
+  box-sizing: border-box;
+  min-height: var(--index-screen-h);
+  position: relative;
+  width: var(--app-frame-w);
+}
+
+.index-bg-stack {
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 0;
+}
+
+.index-garden-bg {
+  display: block;
+  height: var(--index-screen-h);
+  image-rendering: pixelated;
+  left: 0;
+  object-fit: cover;
+  object-position: center top;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+/* Soil bands below the hero bitmap (matches brown / dark-line rhythm of the asset) */
+.index-bg-soil-extension {
+  background: repeating-linear-gradient(
+    to bottom,
+    #ad816d 0,
+    #ad816d var(--index-row-h),
+    #8a6654 var(--index-row-h),
+    #8a6654 calc(var(--index-row-h) + var(--index-line-h))
+  );
+  bottom: 0;
+  image-rendering: pixelated;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: var(--index-screen-h);
+}
+
+.index-content-flow {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+
+/* First row aligns with top soil band (below grass) */
+.index-garden-tulips {
+  box-sizing: border-box;
+  column-gap: 10px;
+  display: grid;
+  grid-auto-rows: var(--index-row-h);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: var(--index-row-1-h);
+  flex-shrink: 0;
+  padding-left: 8%;
+  padding-right: 8%;
+  padding-top: var(--index-soil-start);
+  padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px));
+  pointer-events: auto;
+  row-gap: var(--index-line-h);
+  width: 100%;
+}
+
+.index-garden-cell {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: 0;
+  min-width: 0;
+}
+
+.index-garden-tulip {
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  max-height: var(--index-flower-max);
+  max-width: var(--index-flower-max);
+  object-fit: contain;
+  transform: translateZ(0);
+  transform-origin: center bottom;
+  width: auto;
+}
+
+.index-garden-tulip-link:hover .index-garden-tulip {
+  animation: index-flower-bounce 520ms ease-out 0s 1;
+}
+
+@keyframes index-flower-bounce {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  18% {
+    transform: translateY(-10%) scale(1.02);
+  }
+  34% {
+    transform: translateY(0) scale(0.98);
+  }
+  55% {
+    transform: translateY(-6%) scale(1.01);
+  }
+  72% {
+    transform: translateY(0) scale(0.99);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.index-garden-tulip-link:focus-visible .index-garden-tulip {
+  animation: index-flower-bounce 520ms ease-out 0s 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .index-garden-tulip-link:hover .index-garden-tulip,
+  .index-garden-tulip-link:focus-visible .index-garden-tulip {
+    animation: none;
+  }
+}
+
+.index-garden-tulip-link {
+  align-items: center;
+  color: inherit;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  line-height: 0;
+  min-height: 0;
+  min-width: 0;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  width: 100%;
+}
+
+.index-garden-tulip-link:focus-visible {
+  border-radius: 2px;
+  outline: 3px solid #0a6b12;
+  outline-offset: 4px;
+}
+
+.index-new-timer-link {
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  display: block;
+  left: 50%;
+  line-height: 0;
+  position: absolute;
+  transform: translateX(-50%);
+  width: min(335px, calc(100% - 32px));
+  z-index: 2;
+}
+
+.index-new-timer-link:focus-visible {
+  outline: 3px solid #0a6b12;
+  outline-offset: 4px;
+}
+
+.index-new-timer-img {
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  width: 100%;
+}
+
+/* Choose timer — iPhone 14 Pro frame (393 × 852) */
+.choose-timer-body {
+  align-items: center;
+  background: #f6f6f6;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 0;
+}
+
+.choose-timer-main {
+  border: 1px solid #000;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  height: min(var(--app-frame-h), 100vh);
+  height: min(var(--app-frame-h), 100dvh);
+  max-height: min(var(--app-frame-h), 100vh);
+  max-height: min(var(--app-frame-h), 100dvh);
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative;
+  -webkit-overflow-scrolling: touch;
+  width: var(--app-frame-w);
+}
+
+/* Timer animation: clip scene; same outer dimensions as index */
+.choose-timer-main.anim-tulip-main {
+  overflow: hidden;
+}
+
+/* Edit / view: scroll inside fixed frame when content is tall */
+.choose-timer-main:has(.edit-timer-stack),
+.choose-timer-main.view-tulip-main {
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* View pages should stay fixed (no scroll) */
+.choose-timer-main.view-tulip-main {
+  overflow: hidden;
+}
+
+.choose-timer-main.view-tulip-main .choose-timer-bg {
+  height: 100%;
+  image-rendering: pixelated;
+  inset: 0;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+}
+
+.choose-timer-bg {
+  height: 100%;
+  image-rendering: pixelated;
+  left: 0;
+  object-fit: cover;
+  object-position: center;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.choose-timer-stack {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  height: 100%;
+  justify-content: flex-start;
+  padding: 28px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+  position: relative;
+  z-index: 1;
+}
+
+.choose-timer-header {
+  flex-shrink: 0;
+  margin-top: 8px;
+}
+
+.choose-timer-title-img {
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  margin: 0 auto;
+  max-width: min(300px, 100%);
+  width: 100%;
+  filter: drop-shadow(-4px 5px 0 rgba(0, 0, 0, 0.22));
+}
+
+.choose-timer-grid {
+  display: grid;
+  flex: 1;
+  gap: 14px 12px;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  min-height: 0;
+  width: 100%;
+}
+
+.timer-card {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  font-family: "Pixelify Sans", sans-serif;
+  min-height: 0;
+  padding: 0;
+  text-align: center;
+  width: 100%;
+}
+
+a.timer-card--link {
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  text-decoration: none;
+}
+
+.timer-card:focus-visible {
+  outline: 3px solid #0a3d0a;
+  outline-offset: 3px;
+}
+
+/* Frame asset behind duration + flower (pack.png) */
+.timer-card-frame {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  min-height: 0;
+  width: 100%;
+}
+
+.timer-card-artboard {
+  filter: drop-shadow(-4px 5px 0 rgba(0, 0, 0, 0.2));
+  height: 100%;
+  max-width: 100%;
+  position: relative;
+  width: fit-content;
+}
+
+.timer-card-pack-bg {
+  display: block;
+  height: 100%;
+  image-rendering: pixelated;
+  max-width: 100%;
+  object-fit: contain;
+  width: auto;
+}
+
+.timer-card-face {
+  align-items: center;
+  bottom: 12%;
+  display: grid;
+  grid-template-rows: 26% 1fr;
+  justify-items: center;
+  left: 14%;
+  min-height: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 14%;
+  top: 11%;
+}
+
+.timer-card-duration {
+  align-self: center;
+  color: #0d3d0d;
+  font-size: clamp(11px, 3.2vmin, 15px);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  text-align: center;
+  /* Nudge down to sit between the top dark brown lines on pack.png */
+  transform: translateY(clamp(6px, 2vmin, 11px));
+}
+
+.timer-card-flower-wrap {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: 0;
+  padding: 4% 2% 6%;
+  width: 100%;
+}
+
+.timer-card-flower {
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  max-height: 100%;
+  max-width: 88%;
+  object-fit: contain;
+  width: auto;
+}
+
+.choose-timer-footer {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+.choose-timer-leaf-link {
+  display: block;
+  line-height: 0;
+}
+
+.choose-timer-leaf-link:focus-visible {
+  outline: 3px solid #0a6b12;
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+.choose-timer-leaf {
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  width: 48px;
+}
+
+.view-timer-footer {
+  flex-direction: row;
+  gap: 36px;
+  justify-content: center;
+  margin-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  margin-top: 20px;
+  width: 100%;
+}
+
+.choose-timer-footer.view-timer-footer {
+  margin-top: 20px;
+  padding-top: 0;
+}
+
+.view-timer-footer .choose-timer-leaf {
+  width: 64px;
+}
+
+.view-timer-delete-link {
+  display: block;
+  line-height: 0;
+}
+
+.view-timer-delete-link:focus-visible {
+  outline: 3px solid #0a6b12;
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+.view-timer-delete-icon {
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  width: 64px;
+}
+
+/* Delete flower confirmation */
+.delete-confirm-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.delete-confirm-stack {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 58px 18px 0;
+  gap: 40px;
+  z-index: 1;
+}
+
+.delete-confirm-title-box {
+  background: #03480b;
+  border: none;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+  color: #fff;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: clamp(18px, 5vmin, 26px);
+  font-weight: 500;
+  line-height: 1.1;
+  padding: 16px 18px;
+  text-align: center;
+  width: 100%;
+}
+
+.delete-confirm-pack {
+  filter: drop-shadow(-4px 5px 0 rgba(0, 0, 0, 0.2));
+  max-width: min(318px, 100%);
+  margin-top: -10px;
+  position: relative;
+  width: 100%;
+}
+
+.delete-confirm-pack-img {
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  width: 100%;
+}
+
+.delete-confirm-pack-face {
+  /* Match pack.png inner frame alignment used on view pages */
+  inset: 19% 19% 13% 19%;
+  display: grid;
+  grid-template-rows: 26% 1fr;
+  position: absolute;
+  row-gap: 1.2%;
+}
+
+.delete-confirm-pack-title {
+  color: #0d3d0d;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: clamp(14px, 4vmin, 18px);
+  font-weight: 500;
+  line-height: 1.2;
+  overflow: hidden;
+  padding: 6% 7.5% 3% 7.5%;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.delete-confirm-pack-description {
+  color: #0d3d0d;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: clamp(11px, 3.2vmin, 14px);
+  font-weight: 500;
+  line-height: 1.35;
+  padding: 3% 7.5% 11% 7.5%;
+  overflow: hidden;
+  text-align: center;
+  white-space: pre-wrap;
+}
+
+.delete-confirm-actions {
+  align-items: stretch;
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+  width: 100%;
+}
+
+.delete-confirm-choice {
+  align-items: center;
+  border: none;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: clamp(20px, 6vmin, 32px);
+  font-weight: 500;
+  height: 92px;
+  max-width: 150px;
+  flex: 1 1 0;
+  justify-content: center;
+  line-height: 1;
+  text-decoration: none;
+  width: 100%;
+  transition: transform 140ms ease, background-color 140ms ease,
+    box-shadow 140ms ease;
+  transform: translateZ(0);
+}
+
+.delete-confirm-choice:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 4px;
+}
+
+.delete-confirm-yes {
+  background: #03480b;
+  margin-top: 0;
+}
+
+.delete-confirm-no {
+  background: #03480b;
+}
+
+.delete-confirm-no:hover {
+  background: #03480b;
+  transform: scale(1.04);
+}
+
+.delete-confirm-yes:hover {
+  background: #e64b3c;
+  transform: scale(1.04);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .delete-confirm-choice {
+    transition: none;
+  }
+
+  .delete-confirm-yes:hover {
+    transform: none;
+  }
+
+  .delete-confirm-no:hover {
+    transform: none;
+  }
+}
+
+/* Shared hover “button” animation for clickable art */
+.index-new-timer-link .index-new-timer-img,
+.timer-card--link .timer-card-artboard,
+.edit-timer-start-btn,
+.anim-tulip-cancel-link,
+.choose-timer-leaf-link,
+.view-timer-delete-link {
+  transition: transform 140ms ease, filter 140ms ease;
+  transform: translateZ(0);
+}
+
+.index-new-timer-link:hover .index-new-timer-img {
+  transform: scale(1.08);
+  transform-origin: center;
+}
+
+.timer-card--link:hover .timer-card-artboard {
+  transform: scale(1.04);
+}
+
+.edit-timer-start-btn:hover {
+  transform: scale(1.04);
+}
+
+.anim-tulip-cancel-link:hover {
+  transform: translateX(-50%) scale(1.04);
+}
+
+.choose-timer-leaf-link:hover,
+.view-timer-delete-link:hover {
+  transform: scale(1.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .index-new-timer-link .index-new-timer-img,
+  .timer-card--link .timer-card-artboard,
+  .edit-timer-start-btn,
+  .anim-tulip-cancel-link,
+  .choose-timer-leaf-link,
+  .view-timer-delete-link {
+    transition: none;
+  }
+
+  .index-new-timer-link:hover .index-new-timer-img {
+    transform: none;
+  }
+
+  .timer-card--link:hover .timer-card-artboard,
+  .edit-timer-start-btn:hover {
+    transform: none;
+  }
+
+  .anim-tulip-cancel-link:hover {
+    transform: translateX(-50%);
+  }
+
+  .choose-timer-leaf-link:hover,
+  .view-timer-delete-link:hover {
+    transform: none;
+  }
+}
+
+/* Screen-reader-only labels */
+.visually-hidden {
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+/* Edit timer (tulip) — compact for 393×852; form height follows content */
+.edit-timer-stack {
+  align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  justify-content: flex-start;
+  margin: 0;
+  min-height: 0;
+  /* Shift all foreground assets down (~0.5") without moving background */
+  padding: calc(56px + env(safe-area-inset-top, 0px)) 12px
+    calc(6px + env(safe-area-inset-bottom, 0px)) 12px;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+
+.edit-timer-flower-stage {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  line-height: 0;
+  /* Keep flower close to pack without overlap */
+  margin-bottom: 2px;
+  margin-top: 0;
+  min-height: 0;
+  width: 100%;
+}
+
+.edit-timer-flower-hero {
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  max-height: min(84px, 21vmin);
+  max-width: min(120px, 38%);
+  object-fit: contain;
+  pointer-events: none;
+  transform: none;
+  width: auto;
+}
+
+.edit-timer-artboard {
+  filter: drop-shadow(-4px 5px 0 rgba(0, 0, 0, 0.2));
+  flex-shrink: 0;
+  height: min(520px, 61vh);
+  height: min(520px, 61dvh);
+  margin-top: 0;
+  max-width: 98%;
+  position: relative;
+  width: fit-content;
+}
+
+.edit-timer-pack-img {
+  display: block;
+  height: 100%;
+  image-rendering: pixelated;
+  max-width: 100%;
+  object-fit: contain;
+  width: auto;
+}
+
+/* Same overlay geometry as .view-timer-face / pack.png at any artboard height */
+.edit-timer-face {
+  bottom: 13%;
+  display: grid;
+  grid-template-rows: 26% 1fr;
+  left: 19%;
+  min-height: 0;
+  position: absolute;
+  right: 19%;
+  row-gap: 1.2%;
+  top: 21%;
+}
+
+/* Match .view-tulip-main .view-timer-title-wrap — text sits in the same band on pack.png */
+.edit-timer-title-wrap {
+  align-items: stretch;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  min-height: 0;
+  padding: 6% 7.5% 3% 7.5%;
+  width: 100%;
+}
+
+.edit-timer-title-input {
+  background: transparent;
+  border: none;
+  box-sizing: border-box;
+  color: #0d3d0d;
+  flex: 1 1 auto;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: clamp(14px, 4vmin, 18px);
+  font-weight: 500;
+  height: 100%;
+  line-height: 1.2;
+  min-height: 0;
+  overflow: hidden;
+  padding: 2px 1px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.edit-timer-title-input::placeholder {
+  color: #0d3d0d;
+  opacity: 0.75;
+}
+
+.edit-timer-title-input:focus {
+  outline: none;
+}
+
+/* Match .view-tulip-main .view-timer-body-wrap */
+.edit-timer-body-wrap {
+  box-sizing: border-box;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  padding: 3% 7.5% 11% 7.5%;
+  position: relative;
+  width: 100%;
+}
+
+.edit-timer-description-input {
+  background: transparent;
+  border: none;
+  box-sizing: border-box;
+  color: #0d3d0d;
+  flex: 1 1 auto;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: clamp(11px, 3.2vmin, 14px);
+  font-weight: 500;
+  line-height: 1.35;
+  min-height: 0;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0.35rem 0.15rem 0;
+  resize: none;
+  text-align: center;
+  width: 100%;
+  word-wrap: break-word;
+}
+
+.edit-timer-description-input::placeholder {
+  color: #0d3d0d;
+  opacity: 0.72;
+}
+
+.edit-timer-description-input:focus {
+  outline: none;
+}
+
+.edit-timer-start-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: block;
+  filter: drop-shadow(-3px 4px 0 rgba(0, 0, 0, 0.2));
+  flex-shrink: 0;
+  line-height: 0;
+  margin-top: 2px;
+  max-width: min(300px, 100%);
+  padding: 0;
+  width: 100%;
+}
+
+.edit-timer-start-btn:focus-visible {
+  outline: 3px solid #0a6b12;
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+.edit-timer-start-img {
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  max-width: 100%;
+  width: 100%;
+}
+
+.edit-timer-stack .choose-timer-footer {
+  flex-shrink: 0;
+  line-height: 0;
+  margin-top: 4px;
+  padding-bottom: 2px;
+  padding-top: 2px;
+}
+
+.edit-timer-stack .choose-timer-leaf {
+  display: block;
+  height: auto;
+  width: 44px;
+}
+
+/* View tulip */
+.view-timer-stack {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: flex-start;
+  margin: 0;
+  min-height: 0;
+  padding: 44px 16px calc(12px + env(safe-area-inset-bottom, 0px)) 16px;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+
+.view-timer-artboard {
+  filter: drop-shadow(-4px 5px 0 rgba(0, 0, 0, 0.2));
+  flex-shrink: 0;
+  height: 664px;
+  margin-top: 8px;
+  max-width: 98%;
+  position: relative;
+  width: fit-content;
+}
+
+.view-timer-pack-img {
+  display: block;
+  height: 100%;
+  image-rendering: pixelated;
+  max-width: 100%;
+  object-fit: contain;
+  width: auto;
+}
+
+/* Match pack.png inner frame (same proportions as edit-timer at any artboard height) */
+.view-timer-face {
+  bottom: 13%;
+  display: grid;
+  grid-template-rows: 26% 1fr;
+  left: 19%;
+  min-height: 0;
+  position: absolute;
+  right: 19%;
+  row-gap: 1.2%;
+  top: 19%;
+}
+
+.view-timer-title-wrap {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
+  padding: 0 11%;
+  gap: 6px;
+  width: 100%;
+}
+
+.view-timer-meta-box {
+  align-items: center;
+  background: #03480b;
+  border: none;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  justify-content: center;
+  padding: 18px 22px;
+  width: 100%;
+}
+
+.view-timer-meta-outer {
+  margin-bottom: 18px;
+  max-width: none;
+  width: min(348px, 94%);
+}
+
+.view-timer-meta-line {
+  color: #fff;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: clamp(18px, 5vmin, 26px);
+  font-weight: 500;
+  line-height: 1.15;
+  text-align: center;
+}
+
+.view-timer-title {
+  color: #0d3d0d;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: clamp(14px, 4vmin, 18px);
+  font-weight: 500;
+  line-height: 1.2;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.view-timer-body-wrap {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 11% 8% 18% 8%;
+  position: relative;
+  width: 100%;
+}
+
+.view-timer-description {
+  color: #0d3d0d;
+  flex: 1;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: clamp(11px, 3.2vmin, 14px);
+  font-weight: 500;
+  line-height: 1.35;
+  min-height: 0;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  padding: 0.35rem 0 0;
+  resize: none;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.view-timer-flower-stage {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  justify-content: center;
+  margin-bottom: 10px;
+  margin-top: 6px;
+  min-height: 0;
+  width: 100%;
+}
+
+.view-timer-flower-hero {
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  max-height: min(200px, 52vmin);
+  max-width: min(240px, 72%);
+  object-fit: contain;
+  pointer-events: none;
+  transform: none;
+  width: auto;
+}
+
+/* View flower pages — stack above background; pack stays full 628px height */
+.view-tulip-main .view-timer-stack {
+  box-sizing: border-box;
+  height: auto;
+  min-height: 0;
+  padding: 12px 14px 16px;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+
+.view-tulip-main .view-timer-meta-outer {
+  margin-bottom: 8px;
+  /* Down from top; transform keeps pack layout position unchanged */
+  transform: translateY(clamp(20px, 4.5vmin, 36px));
+}
+
+.view-tulip-main .view-timer-meta-box {
+  padding: 12px 18px;
+}
+
+.view-tulip-main .view-timer-meta-line {
+  font-size: clamp(16px, 4.2vmin, 22px);
+}
+
+.view-tulip-main .view-timer-artboard {
+  height: 664px;
+  margin-top: 4px;
+  transform: translateY(-58px);
+}
+
+.view-tulip-main .view-timer-title-wrap {
+  box-sizing: border-box;
+  padding: 4% 7.5% 3% 7.5%;
+}
+
+.view-tulip-main .view-timer-body-wrap {
+  box-sizing: border-box;
+  padding: 3% 7.5% 11% 7.5%;
+}
+
+.view-tulip-main .view-timer-description {
+  text-align: center;
+}
+
+.view-tulip-main .view-timer-flower-stage {
+  margin-bottom: 8px;
+  margin-top: 4px;
+  transform: translateY(clamp(24px, 5.5vmin, 42px));
+}
+
+.view-tulip-main .view-timer-flower-hero {
+  max-height: min(160px, 38vmin);
+  max-width: min(200px, 58%);
+}
+
+.view-tulip-main .view-timer-footer {
+  gap: 32px;
+  margin-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  margin-top: 12px;
+  transform: translateY(calc(-134px + clamp(-12px, -3vmin, -6px)));
+}
+
+.view-tulip-main .view-timer-footer .choose-timer-leaf {
+  width: 64px;
+}
+
+.view-tulip-main .view-timer-delete-icon {
+  width: 64px;
+}
+
+.view-timer-continue-link {
+  filter: drop-shadow(-3px 4px 0 rgba(0, 0, 0, 0.2));
+  line-height: 0;
+  margin-top: auto;
+  max-width: min(300px, 100%);
+  width: 100%;
+}
+
+.view-timer-continue-link:focus-visible {
+  outline: 3px solid #0a6b12;
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+.view-timer-continue-img {
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  width: 100%;
+}
+
+/* Tulip animation screen */
+.anim-tulip-main {
+  --tulip-t: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.anim-tulip-scene {
+  inset: 0;
+  height: 100%;
+  position: absolute;
+  width: 100%;
+}
+
+.anim-tulip-defs {
+  height: 0;
+  overflow: hidden;
+  position: absolute;
+  width: 0;
+}
+
+.anim-tulip-root-bg {
+  inset: 0;
+  display: block;
+  position: absolute;
+  height: 100%;
+  image-rendering: pixelated;
+  min-height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  cursor: pointer;
+  width: 100%;
+  z-index: 0;
+  /* Prevent edge whitespace from the source art: slight zoom-in */
+  transform: translateX(14px) scale(1.3);
+  transform-origin: center;
+}
+
+.anim-tulip-root-bg:focus-visible {
+  outline: 3px solid #0a6b12;
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+/* SVG #anim-root-water-mask: inverted root art → water only on root pixels */
+.anim-tulip-water-layer {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.anim-tulip-water-pixel {
+  background-color: #38a8d4;
+  background-image: repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.14) 0,
+      rgba(0, 0, 0, 0.14) 2px,
+      transparent 2px,
+      transparent 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.18) 0,
+      rgba(255, 255, 255, 0.18) 2px,
+      transparent 2px,
+      transparent 4px
+    );
+  background-size: 4px 4px;
+  clip-path: inset(calc((1 - var(--tulip-t, 0)) * 100%) 0 0 0);
+  -webkit-clip-path: inset(calc((1 - var(--tulip-t, 0)) * 100%) 0 0 0);
+  height: 100%;
+  image-rendering: pixelated;
+  -webkit-mask: url(#anim-root-water-mask);
+  mask: url(#anim-root-water-mask);
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  mix-blend-mode: soft-light;
+  opacity: 0.9;
+  position: absolute;
+  width: 100%;
+  transform: translateZ(0);
+}
+
+.anim-tulip-tulip-wrap {
+  left: 50%;
+  pointer-events: none;
+  position: absolute;
+  top: 4%;
+  /* Slight right shift while staying centered-ish */
+  transform: translateX(calc(-50% - 7px));
+  z-index: 2;
+}
+
+.anim-tulip-flower {
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  transform: scale(calc(0.9 + 1.6 * var(--tulip-t, 0)));
+  transform-origin: center bottom;
+  /* Sized to sit cleanly inside the root jar opening */
+  width: min(420px, 110%);
+}
+
+.anim-tulip-cancel-link {
+  bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+  display: block;
+  filter: drop-shadow(-3px 4px 0 rgba(0, 0, 0, 0.22));
+  left: 50%;
+  line-height: 0;
+  max-width: min(300px, calc(100% - 32px));
+  position: absolute;
+  transform: translateX(-50%);
+  z-index: 3;
+}
+
+.anim-tulip-cancel-link:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+.anim-tulip-cancel-img {
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  width: 100%;
+}
+
+/* Tulip congratulations */
+.congrats-stack {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  height: 100%;
+  justify-content: center;
+  padding: 36px 24px calc(28px + env(safe-area-inset-bottom, 0px));
+  position: relative;
+  text-align: center;
+  z-index: 1;
+}
+
+.congrats-heading {
+  color: #fff;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: clamp(26px, 7vmin, 34px);
+  font-weight: 500;
+  line-height: 1.15;
+  margin: 0;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+}
+
+.congrats-tulip {
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  max-width: min(220px, 56%);
+  width: 100%;
+}
+
+.congrats-message {
+  color: #fff;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: clamp(15px, 4vmin, 19px);
+  font-weight: 500;
+  line-height: 1.35;
+  margin: 0;
+  max-width: 320px;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
+}
+
+.congrats-accent {
+  color: #f5e94a;
+}
+
+.congrats-continue-link {
+  display: block;
+  filter: drop-shadow(-3px 4px 0 rgba(0, 0, 0, 0.2));
+  line-height: 0;
+  margin-top: 12px;
+  max-width: min(300px, 100%);
+  width: 100%;
+}
+
+.congrats-continue-link:focus-visible {
+  outline: 3px solid #0a6b12;
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+.congrats-continue-img {
+  display: block;
+  height: auto;
+  image-rendering: pixelated;
+  width: 100%;
+}
+
+

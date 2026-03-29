@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Congratulations — Coneflower — Plantivity</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="choose-timer-body">
+    <main class="choose-timer-main" aria-label="Timer complete">
+      <img
+        class="choose-timer-bg"
+        src="assets/background color 5.png"
+        alt=""
+      />
+      <div class="congrats-stack">
+        <h1 class="congrats-heading">Congratulations!</h1>
+        <img
+          class="congrats-tulip"
+          src="assets/coneflower 1.png"
+          alt=""
+        />
+        <p class="congrats-message">
+          You earn a new <span class="congrats-accent">coneflower</span> to your
+          garden!
+        </p>
+        <a
+          class="congrats-continue-link"
+          href="index.html"
+          id="congrats-continue"
+        >
+          <img
+            class="congrats-continue-img"
+            src="assets/continue.png"
+            alt="Continue"
+          />
+        </a>
+      </div>
+    </main>
+    <script>
+      (function () {
+        var link = document.getElementById("congrats-continue");
+        var pendingObjKey = "plantivityPendingConeflower";
+        var pendingRewardIdKey = "plantivityConeflowerPendingRewardId";
+        var gardenKey = "plantivityGardenConeflowers";
+
+        link.addEventListener("click", function (e) {
+          var rewardId = localStorage.getItem(pendingRewardIdKey);
+          if (!rewardId) return;
+          e.preventDefault();
+
+          var pendingRaw = localStorage.getItem(pendingObjKey);
+          var pending = null;
+          if (pendingRaw) {
+            try {
+              pending = JSON.parse(pendingRaw);
+            } catch (err) {
+              pending = null;
+            }
+          }
+
+          var listRaw = localStorage.getItem(gardenKey);
+          var coneflowers = [];
+          if (listRaw) {
+            try {
+              coneflowers = JSON.parse(listRaw);
+            } catch (err) {
+              coneflowers = [];
+            }
+          }
+          if (!Array.isArray(coneflowers)) coneflowers = [];
+
+          var alreadyAdded = coneflowers.some(function (t) {
+            return t && t.id === rewardId;
+          });
+
+          if (!alreadyAdded && pending && pending.id) {
+            coneflowers.push(pending);
+          }
+
+          localStorage.setItem(gardenKey, JSON.stringify(coneflowers));
+          localStorage.removeItem(pendingRewardIdKey);
+          localStorage.removeItem(pendingObjKey);
+          window.location.href = "index.html";
+        });
+      })();
+    </script>
+  </body>
+</html>
+

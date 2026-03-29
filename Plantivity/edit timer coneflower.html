@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Edit timer — Coneflower — Plantivity</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="choose-timer-body">
+    <main class="choose-timer-main" aria-label="Edit coneflower timer">
+      <img
+        class="choose-timer-bg"
+        src="assets/background color 5.png"
+        alt=""
+      />
+      <form class="edit-timer-stack" id="edit-timer-form" action="#" method="post">
+        <div class="edit-timer-flower-stage">
+          <img
+            class="edit-timer-flower-hero"
+            src="assets/coneflower 1.png"
+            alt=""
+          />
+        </div>
+        <div class="edit-timer-artboard">
+          <img
+            class="edit-timer-pack-img"
+            src="assets/pack.png"
+            alt=""
+            aria-hidden="true"
+          />
+          <div class="edit-timer-face">
+            <div class="edit-timer-title-wrap">
+              <label class="visually-hidden" for="timer-title">Timer title</label>
+              <input
+                id="timer-title"
+                class="edit-timer-title-input"
+                type="text"
+                name="timer_title"
+                placeholder="Timer Title"
+                autocomplete="off"
+              />
+            </div>
+            <div class="edit-timer-body-wrap">
+              <label class="visually-hidden" for="timer-description"
+                >Description</label
+              >
+              <textarea
+                id="timer-description"
+                class="edit-timer-description-input"
+                name="description"
+                rows="5"
+                placeholder="Enter description"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="edit-timer-start-btn">
+          <img
+            src="assets/start timer.png"
+            alt="Start Timer"
+            class="edit-timer-start-img"
+          />
+        </button>
+
+        <footer class="choose-timer-footer">
+          <a class="choose-timer-leaf-link" href="choose timer.html">
+            <img
+              class="choose-timer-leaf"
+              src="assets/leaf logo 1.png"
+              alt="Back to choose timer"
+              width="48"
+              height="50"
+            />
+          </a>
+        </footer>
+      </form>
+    </main>
+    <script>
+      document
+        .getElementById("edit-timer-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          var titleEl = document.getElementById("timer-title");
+          var descEl = document.getElementById("timer-description");
+
+          // Save the coneflower the user entered so the animation + congrats
+          // screens can add it into the garden.
+          var pendingId =
+            "coneflower_" +
+            String(Date.now()) +
+            "_" +
+            String(Math.floor(Math.random() * 10000));
+          var pending = {
+            id: pendingId,
+            flower: "coneflower",
+            title: titleEl ? titleEl.value : "",
+            description: descEl ? descEl.value : "",
+            durationMs: 3600000,
+            createdAt: Date.now(),
+          };
+          localStorage.setItem(
+            "plantivityPendingConeflower",
+            JSON.stringify(pending)
+          );
+          localStorage.removeItem("plantivityConeflowerPendingRewardId");
+
+          localStorage.setItem(
+            "plantivityConeflowerRunStart",
+            String(Date.now())
+          );
+          localStorage.setItem(
+            "plantivityConeflowerRunDurationMs",
+            "3600000"
+          );
+          localStorage.setItem(
+            "plantivityConeflowerTitle",
+            titleEl ? titleEl.value : ""
+          );
+          localStorage.setItem(
+            "plantivityConeflowerDescription",
+            descEl ? descEl.value : ""
+          );
+          window.location.href = "animation coneflower.html";
+        });
+    </script>
+  </body>
+</html>
+

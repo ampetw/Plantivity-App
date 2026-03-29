@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Plantivity</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="splash-body">
+    <div id="splash-root" class="splash-root" aria-hidden="false">
+      <main class="splash-main">
+        <img
+          src="assets/background color 5.png"
+          alt=""
+          class="splash-background-texture"
+        />
+        <div class="splash-content">
+          <img
+            src="assets/leaf logo 1.png"
+            alt=""
+            class="splash-logo-img"
+            width="58"
+            height="60"
+          />
+          <h1 class="splash-title">Plantivity</h1>
+        </div>
+      </main>
+    </div>
+    <script>
+      (function () {
+        var SHOW_MS = 1000;
+        var FADE_MS = 450;
+        var root = document.getElementById("splash-root");
+        function go() {
+          window.location.replace("index.html");
+        }
+        setTimeout(function () {
+          root.classList.add("splash-fade-out");
+          var done = false;
+          function finish() {
+            if (done) return;
+            done = true;
+            go();
+          }
+          root.addEventListener("transitionend", function onEnd(e) {
+            if (e.propertyName !== "opacity") return;
+            root.removeEventListener("transitionend", onEnd);
+            finish();
+          });
+          setTimeout(finish, FADE_MS + 80);
+        }, SHOW_MS);
+      })();
+    </script>
+  </body>
+</html>
+

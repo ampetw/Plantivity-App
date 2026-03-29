@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Plantivity</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="index-body">
+    <div class="index-scroll">
+      <main class="index-main" aria-label="Plantivity home screen">
+        <div class="index-bg-stack" aria-hidden="true">
+          <img
+            class="index-garden-bg"
+            src="assets/garden background.png"
+            alt=""
+          />
+          <div class="index-bg-soil-extension"></div>
+        </div>
+        <div class="index-content-flow">
+          <div
+            class="index-garden-tulips"
+            id="garden-tulips"
+            aria-label="Flowers you have earned"
+          ></div>
+        </div>
+        <a class="index-new-timer-link" href="choose timer.html">
+          <img
+            class="index-new-timer-img"
+            src="assets/new timer button.png"
+            alt="New Timer"
+          />
+        </a>
+      </main>
+    </div>
+    <script>
+      (function () {
+        var host = document.getElementById("garden-tulips");
+        if (!host) return;
+        host.innerHTML = "";
+
+        var metaByKey = [
+          {
+            gardenKey: "plantivityGardenTulips",
+            flower: "tulip",
+            imgSrc: "assets/tulip 1.png",
+            viewHrefBase: "view tulip.html?id=",
+          },
+          {
+            gardenKey: "plantivityGardenDaisies",
+            flower: "daisy",
+            imgSrc: "assets/daisy 1.png",
+            viewHrefBase: "view daisy.html?id=",
+          },
+          {
+            gardenKey: "plantivityGardenIrises",
+            flower: "iris",
+            imgSrc: "assets/iris 1.png",
+            viewHrefBase: "view iris.html?id=",
+          },
+          {
+            gardenKey: "plantivityGardenConeflowers",
+            flower: "coneflower",
+            imgSrc: "assets/coneflower 1.png",
+            viewHrefBase: "view coneflower.html?id=",
+          },
+        ];
+
+        var items = [];
+
+        function readList(gardenKey) {
+          var listRaw = localStorage.getItem(gardenKey);
+          if (!listRaw) return [];
+          try {
+            var parsed = JSON.parse(listRaw);
+            return Array.isArray(parsed) ? parsed : [];
+          } catch (err) {
+            return [];
+          }
+        }
+
+        for (var i = 0; i < metaByKey.length; i += 1) {
+          var meta = metaByKey[i];
+          var list = readList(meta.gardenKey);
+
+          for (var j = 0; j < list.length; j += 1) {
+            var item = list[j];
+            if (!item || !item.id) continue;
+            items.push({ meta: meta, item: item });
+          }
+        }
+
+        if (items.length < 1) return;
+
+        items.sort(function (a, b) {
+          var at = a.item.createdAt || 0;
+          var bt = b.item.createdAt || 0;
+          if (at !== bt) return at - bt;
+          return String(a.item.id || "").localeCompare(String(b.item.id || ""));
+        });
+
+        for (var k = 0; k < items.length; k += 1) {
+          var entry = items[k];
+          var meta = entry.meta;
+          var item = entry.item;
+
+          var cell = document.createElement("div");
+          cell.className = "index-garden-cell";
+
+          var link = document.createElement("a");
+          link.className = "index-garden-tulip-link";
+          link.href = meta.viewHrefBase + encodeURIComponent(item.id);
+          link.setAttribute(
+            "aria-label",
+            "View timer: " + (item.title ? item.title : meta.flower)
+          );
+
+          var img = document.createElement("img");
+          img.src = meta.imgSrc;
+          img.alt = "";
+          img.className = "index-garden-tulip";
+
+          link.appendChild(img);
+          cell.appendChild(link);
+          host.appendChild(cell);
+        }
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Iris timer — Plantivity</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="choose-timer-body">
+    <main class="choose-timer-main anim-tulip-main" aria-label="Iris growing timer">
+      <svg
+        class="anim-tulip-defs"
+        width="0"
+        height="0"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <defs>
+          <filter
+            id="anim-root-invert"
+            color-interpolation-filters="sRGB"
+          >
+            <feColorMatrix
+              type="matrix"
+              values="-1 0 0 0 1  0 -1 0 0 1  0 0 -1 0 1  0 0 0 1 0"
+            />
+          </filter>
+          <mask
+            id="anim-root-water-mask"
+            maskContentUnits="userSpaceOnUse"
+            mask-type="luminance"
+            maskUnits="userSpaceOnUse"
+            x="0"
+            y="0"
+            width="393"
+            height="852"
+          >
+            <image
+              href="assets/root background.png"
+              x="14"
+              y="0"
+              width="393"
+              height="852"
+              preserveAspectRatio="xMidYMid slice"
+              filter="url(#anim-root-invert)"
+            />
+          </mask>
+        </defs>
+      </svg>
+
+      <div class="anim-tulip-scene">
+        <img
+          class="anim-tulip-root-bg"
+          id="anim-tulip-root-bg"
+          src="assets/root background.png"
+          alt=""
+          tabindex="0"
+          role="button"
+          aria-label="Finish timer early"
+        />
+        <div class="anim-tulip-water-layer" aria-hidden="true">
+          <div class="anim-tulip-water-pixel"></div>
+        </div>
+        <div class="anim-tulip-tulip-wrap">
+          <img
+            class="anim-tulip-flower"
+            src="assets/iris 1.png"
+            alt="Iris"
+          />
+        </div>
+      </div>
+
+      <a
+        class="anim-tulip-cancel-link"
+        id="anim-tulip-cancel"
+        href="choose timer.html"
+      >
+        <img
+          class="anim-tulip-cancel-img"
+          src="assets/cancel timer.png"
+          alt="Cancel Timer"
+        />
+      </a>
+    </main>
+    <script>
+      (function () {
+        var DURATION = 1800000;
+        var startKey = "plantivityIrisRunStart";
+        var durKey = "plantivityIrisRunDurationMs";
+        var pendingObjKey = "plantivityPendingIris";
+        var pendingRewardIdKey = "plantivityIrisPendingRewardId";
+
+        var start = parseInt(localStorage.getItem(startKey), 10);
+        if (!start || isNaN(start)) {
+          window.location.replace("edit timer iris.html");
+          return;
+        }
+
+        var pendingRaw = localStorage.getItem(pendingObjKey);
+        var pending = null;
+        if (pendingRaw) {
+          try {
+            pending = JSON.parse(pendingRaw);
+          } catch (err) {
+            pending = null;
+          }
+        }
+        if (!pending || !pending.id) {
+          window.location.replace("edit timer iris.html");
+          return;
+        }
+
+        var duration = parseInt(localStorage.getItem(durKey), 10) || DURATION;
+        var root = document.documentElement;
+
+        var iv = null;
+        var finished = false;
+
+        function clamp01(x) {
+          return x < 0 ? 0 : x > 1 ? 1 : x;
+        }
+
+        function finishNow() {
+          if (finished) return;
+          finished = true;
+
+          // Jump to fully-grown state (mostly for visual consistency).
+          root.style.setProperty("--tulip-t", "1");
+
+          if (iv) clearInterval(iv);
+
+          localStorage.setItem(
+            pendingRewardIdKey,
+            String(pending.id)
+          );
+          localStorage.removeItem(startKey);
+          localStorage.removeItem(durKey);
+
+          window.location.replace("iris congrats.html");
+        }
+
+        function tick() {
+          var elapsed = Date.now() - start;
+          var p = clamp01(elapsed / duration);
+          root.style.setProperty("--tulip-t", String(p));
+
+          if (p >= 1) {
+            finishNow();
+            return;
+          }
+        }
+
+        iv = setInterval(tick, 200);
+        tick();
+
+        var rootBg = document.getElementById("anim-tulip-root-bg");
+        if (rootBg) {
+          rootBg.addEventListener("click", finishNow);
+          rootBg.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              finishNow();
+            }
+          });
+        }
+
+        document
+          .getElementById("anim-tulip-cancel")
+          .addEventListener("click", function () {
+            localStorage.removeItem(startKey);
+            localStorage.removeItem(durKey);
+            localStorage.removeItem(pendingObjKey);
+            localStorage.removeItem(pendingRewardIdKey);
+          });
+      })();
+    </script>
+  </body>
+</html>
+

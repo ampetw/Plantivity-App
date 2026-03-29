@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Delete flower — Plantivity</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="choose-timer-body">
+    <main
+      class="choose-timer-main delete-confirm-main"
+      aria-label="Delete flower confirmation"
+    >
+      <img
+        class="choose-timer-bg"
+        src="assets/background color 5.png"
+        alt=""
+      />
+
+      <div class="delete-confirm-stack">
+        <div class="delete-confirm-title-box" aria-live="polite">
+          Delete <span id="delete-confirm-title">Flower</span>?
+        </div>
+
+        <div class="delete-confirm-pack" aria-hidden="true">
+          <img
+            class="delete-confirm-pack-img"
+            src="assets/pack.png"
+            alt=""
+          />
+          <div class="delete-confirm-pack-face">
+            <div
+              id="delete-confirm-pack-title"
+              class="delete-confirm-pack-title"
+            ></div>
+            <div
+              id="delete-confirm-pack-description"
+              class="delete-confirm-pack-description"
+            ></div>
+          </div>
+        </div>
+
+        <div class="delete-confirm-actions" aria-label="Delete options">
+          <a
+            href="#"
+            class="delete-confirm-choice delete-confirm-yes"
+            id="delete-confirm-yes"
+            aria-label="Yes, delete flower"
+          >
+            yes
+          </a>
+
+          <a
+            href="#"
+            class="delete-confirm-choice delete-confirm-no"
+            id="delete-confirm-no"
+            aria-label="No, keep flower"
+          >
+            no
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      (function () {
+        function getGardenKey(flower) {
+          if (flower === "tulip") return "plantivityGardenTulips";
+          if (flower === "daisy") return "plantivityGardenDaisies";
+          if (flower === "iris") return "plantivityGardenIrises";
+          if (flower === "coneflower") return "plantivityGardenConeflowers";
+          return "";
+        }
+
+        var flower = localStorage.getItem("plantivityDeleteFlower") || "";
+        var id = localStorage.getItem("plantivityDeleteId") || "";
+        var title = localStorage.getItem("plantivityDeleteTitle") || "";
+        var description =
+          localStorage.getItem("plantivityDeleteDescription") || "";
+
+        var titleEl = document.getElementById("delete-confirm-title");
+        var packTitleEl = document.getElementById("delete-confirm-pack-title");
+        var packDescEl = document.getElementById(
+          "delete-confirm-pack-description"
+        );
+        var displayTitle =
+          title && String(title).trim().length > 0 ? title : "Flower";
+
+        if (titleEl) {
+          titleEl.textContent = displayTitle;
+        }
+
+        if (packTitleEl) {
+          packTitleEl.textContent = displayTitle;
+        }
+
+        if (packDescEl) {
+          packDescEl.textContent = description || "";
+        }
+
+        if (!flower || !id) {
+          window.location.replace("index.html");
+          return;
+        }
+
+        var gardenKey = getGardenKey(flower);
+        if (!gardenKey) {
+          window.location.replace("index.html");
+          return;
+        }
+
+        function cleanupAndRedirect() {
+          localStorage.removeItem("plantivityDeleteFlower");
+          localStorage.removeItem("plantivityDeleteId");
+          localStorage.removeItem("plantivityDeleteTitle");
+          localStorage.removeItem("plantivityDeleteDescription");
+          window.location.href = "index.html";
+        }
+
+        var yesBtn = document.getElementById("delete-confirm-yes");
+        var noBtn = document.getElementById("delete-confirm-no");
+
+        if (yesBtn) {
+          yesBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+
+            var listRaw = localStorage.getItem(gardenKey);
+            var arr = [];
+            if (listRaw) {
+              try {
+                arr = JSON.parse(listRaw);
+              } catch (err) {
+                arr = [];
+              }
+            }
+            if (!Array.isArray(arr)) arr = [];
+
+            arr = arr.filter(function (t) {
+              return !(t && t.id === id);
+            });
+
+            localStorage.setItem(gardenKey, JSON.stringify(arr));
+            cleanupAndRedirect();
+          });
+        }
+
+        if (noBtn) {
+          noBtn.addEventListener("click", function (e) {
+            e.preventDefault();
+            cleanupAndRedirect();
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>
+
