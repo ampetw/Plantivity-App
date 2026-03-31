@@ -309,7 +309,7 @@ body {
   max-height: min(var(--app-frame-h), 100vh);
   max-height: min(var(--app-frame-h), 100dvh);
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: hidden;
   position: relative;
   -webkit-overflow-scrolling: touch;
   width: var(--app-frame-w);
@@ -318,14 +318,6 @@ body {
 /* Timer animation: clip scene; same outer dimensions as index */
 .choose-timer-main.anim-tulip-main {
   overflow: hidden;
-}
-
-/* Edit / view: scroll inside fixed frame when content is tall */
-.choose-timer-main:has(.edit-timer-stack),
-.choose-timer-main.view-tulip-main {
-  overflow-x: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
 }
 
 /* View pages should stay fixed (no scroll) */
@@ -797,6 +789,34 @@ a.timer-card--link {
   z-index: 1;
 }
 
+/* Edit timer screens: keep CTAs visible without scrolling */
+.choose-timer-main:has(.edit-timer-stack) .edit-timer-stack {
+  height: 100%;
+  padding-top: calc(28px + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+}
+
+.choose-timer-main:has(.edit-timer-stack) .edit-timer-artboard {
+  height: min(500px, 62%);
+  margin-top: 0;
+}
+
+.choose-timer-main:has(.edit-timer-stack) .edit-timer-start-btn {
+  bottom: calc(58px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  margin-top: 0;
+  position: absolute;
+  transform: translateX(-50%);
+}
+
+.choose-timer-main:has(.edit-timer-stack) .edit-timer-stack .choose-timer-footer {
+  bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  margin-top: 0;
+  position: absolute;
+  transform: translateX(-50%);
+}
+
 .edit-timer-flower-stage {
   align-items: center;
   display: flex;
@@ -992,6 +1012,21 @@ a.timer-card--link {
   position: relative;
   width: 100%;
   z-index: 1;
+}
+
+/* View pages: keep footer icons visible without scrolling */
+.view-tulip-main .view-timer-stack {
+  height: 100%;
+  padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+}
+
+.view-tulip-main .view-timer-footer {
+  bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  margin: 0;
+  position: absolute;
+  transform: translateX(-50%) translateY(calc(-134px + clamp(-12px, -3vmin, -6px)));
+  width: 100%;
 }
 
 .view-timer-artboard {
