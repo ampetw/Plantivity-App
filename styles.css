@@ -1022,7 +1022,7 @@ a.timer-card--link {
 
 .view-tulip-main .view-timer-footer {
   align-items: center;
-  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(54px + env(safe-area-inset-bottom, 0px));
   gap: 18px;
   justify-content: center;
   left: 50%;
