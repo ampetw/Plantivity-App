@@ -25,7 +25,39 @@
           />
         </header>
 
-        <div class="profile-mid">
+        <div class="profile-auth-section" id="profile-auth-section" hidden>
+          <p class="profile-auth-intro">Sign in with your email to save your profile and appear in Community.</p>
+          <label class="visually-hidden" for="profile-auth-email">Email</label>
+          <input
+            id="profile-auth-email"
+            class="profile-auth-input"
+            type="email"
+            autocomplete="username"
+            placeholder="Email"
+          />
+          <label class="visually-hidden" for="profile-auth-password">Password</label>
+          <input
+            id="profile-auth-password"
+            class="profile-auth-input"
+            type="password"
+            autocomplete="current-password"
+            placeholder="Password"
+          />
+          <p class="profile-auth-error" id="profile-auth-error" role="alert"></p>
+          <div class="profile-auth-actions">
+            <button type="button" class="profile-auth-btn" id="profile-auth-signin">Sign in</button>
+            <button type="button" class="profile-auth-btn profile-auth-btn--secondary" id="profile-auth-signup">
+              Create account
+            </button>
+          </div>
+        </div>
+
+        <div class="profile-signed-row" id="profile-signed-row" hidden>
+          <span class="profile-signed-email" id="profile-signed-email"></span>
+          <button type="button" class="profile-signout-btn" id="profile-auth-signout">Sign out</button>
+        </div>
+
+        <div class="profile-mid" id="profile-editor-wrap">
         <div class="profile-uname-block">
           <button type="button" class="profile-uname-label-btn" id="profile-uname-label">
             Username
@@ -96,12 +128,82 @@
         </footer>
       </div>
     </main>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
     <script src="plantivity-rtdb.js"></script>
+    <script src="plantivity-firebase-config.js"></script>
     <script src="plantivity-social.js"></script>
     <script>
       (function () {
         var PS = window.PlantivitySocial;
         if (!PS) return;
+
+        var authSection = document.getElementById("profile-auth-section");
+        var signedRow = document.getElementById("profile-signed-row");
+        var editorWrap = document.getElementById("profile-editor-wrap");
+        var authEmail = document.getElementById("profile-auth-email");
+        var authPass = document.getElementById("profile-auth-password");
+        var authError = document.getElementById("profile-auth-error");
+        var btnSignin = document.getElementById("profile-auth-signin");
+        var btnSignup = document.getElementById("profile-auth-signup");
+        var btnSignout = document.getElementById("profile-auth-signout");
+        var signedEmailEl = document.getElementById("profile-signed-email");
+
+        function setAuthError(msg) {
+          if (authError) authError.textContent = msg || "";
+        }
+
+        function applyAuthUi(user) {
+          var sdk = PS.useFirebaseSdk();
+          if (!sdk) {
+            if (authSection) authSection.hidden = true;
+            if (signedRow) signedRow.hidden = true;
+            if (editorWrap) editorWrap.hidden = false;
+            return;
+          }
+          if (user) {
+            if (authSection) authSection.hidden = true;
+            if (signedRow) signedRow.hidden = false;
+            if (signedEmailEl) signedEmailEl.textContent = user.email || "Signed in";
+          } else {
+            if (authSection) authSection.hidden = false;
+            if (signedRow) signedRow.hidden = true;
+          }
+          if (editorWrap) editorWrap.hidden = false;
+        }
+
+        PS.onAuthStateChanged(function (user) {
+          applyAuthUi(user);
+          if (user && PS.useFirebaseSdk()) {
+            PS.pullRemoteProfileToLocal().then(function () {
+              renderUname();
+              renderPackFlower();
+            });
+          }
+        });
+
+        if (btnSignin) {
+          btnSignin.addEventListener("click", function () {
+            setAuthError("");
+            PS.signInWithEmailPassword(authEmail.value, authPass.value).catch(function (err) {
+              setAuthError(err && err.message ? err.message : "Sign-in failed.");
+            });
+          });
+        }
+        if (btnSignup) {
+          btnSignup.addEventListener("click", function () {
+            setAuthError("");
+            PS.signUpWithEmailPassword(authEmail.value, authPass.value).catch(function (err) {
+              setAuthError(err && err.message ? err.message : "Could not create account.");
+            });
+          });
+        }
+        if (btnSignout) {
+          btnSignout.addEventListener("click", function () {
+            PS.signOutFirebase();
+          });
+        }
 
         var labelBtn = document.getElementById("profile-uname-label");
         var viewEl = document.getElementById("profile-uname-view");
@@ -156,6 +258,13 @@
           PS.setProfileUsername(inputEl.value);
           renderUname();
           closeEdit();
+          if (PS.useFirebaseSdk() && !PS.getAuthUid()) {
+            setSyncMessage("Sign in to save your profile to the cloud.");
+            window.setTimeout(function () {
+              setSyncMessage("");
+            }, 2600);
+            return;
+          }
           if (!PS.getRtdbRoot()) {
             setSyncMessage("Saved on this device.");
             window.setTimeout(function () {
@@ -171,8 +280,12 @@
                 setSyncMessage("");
               }, 2400);
             })
-            .catch(function () {
-              setSyncMessage("Saved on this device; community sync failed.");
+            .catch(function (err) {
+              var msg =
+                err && err.message === "not_signed_in"
+                  ? "Sign in to sync your profile."
+                  : "Saved on this device; cloud sync failed.";
+              setSyncMessage(msg);
             });
         }
 
@@ -210,6 +323,13 @@
               PS.setProfileFlower(flower);
               renderPackFlower();
               closePicker();
+              if (PS.useFirebaseSdk() && !PS.getAuthUid()) {
+                setSyncMessage("Sign in to save your flower to the cloud.");
+                window.setTimeout(function () {
+                  setSyncMessage("");
+                }, 2200);
+                return;
+              }
               if (!PS.getRtdbRoot()) {
                 setSyncMessage("Flower saved on this device.");
                 window.setTimeout(function () {
@@ -225,8 +345,12 @@
                     setSyncMessage("");
                   }, 2200);
                 })
-                .catch(function () {
-                  setSyncMessage("Flower saved locally; community sync failed.");
+                .catch(function (err) {
+                  var msg =
+                    err && err.message === "not_signed_in"
+                      ? "Sign in to sync."
+                      : "Flower saved locally; cloud sync failed.";
+                  setSyncMessage(msg);
                 });
             });
             pickerGrid.appendChild(b);
@@ -259,7 +383,9 @@
           if (e.key === "Escape" && !picker.hidden) closePicker();
         });
 
-        PS.getOrCreateDeviceId();
+        if (!PS.useFirebaseSdk()) {
+          PS.getOrCreateDeviceId();
+        }
         renderUname();
         renderPackFlower();
         renderStats();

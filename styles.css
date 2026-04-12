@@ -1545,6 +1545,107 @@ a.timer-card--link {
   width: 100%;
 }
 
+.profile-auth-section {
+  background: rgba(246, 242, 228, 0.92);
+  border: 2px solid #5a7a42;
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 340px;
+  padding: 14px 16px;
+  width: 100%;
+}
+
+.profile-auth-intro {
+  color: #0b3d0f;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: clamp(12px, 3.2vmin, 14px);
+  line-height: 1.35;
+  margin: 0;
+  text-align: center;
+}
+
+.profile-auth-input {
+  background: #fff;
+  border: 2px solid #7a5230;
+  border-radius: 2px;
+  box-sizing: border-box;
+  color: #0b3d0f;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: clamp(14px, 3.8vmin, 16px);
+  padding: 10px 12px;
+  width: 100%;
+}
+
+.profile-auth-error {
+  color: #8b1a1a;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: 12px;
+  margin: 0;
+  min-height: 1.2em;
+  text-align: center;
+}
+
+.profile-auth-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.profile-auth-btn {
+  background: #0d4f14;
+  border: none;
+  border-radius: 2px;
+  color: #fff;
+  cursor: pointer;
+  flex: 1 1 120px;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: 14px;
+  padding: 10px 14px;
+}
+
+.profile-auth-btn--secondary {
+  background: #2d6b35;
+}
+
+.profile-signed-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  max-width: 340px;
+  width: 100%;
+}
+
+.profile-signed-email {
+  color: #08380c;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: clamp(13px, 3.4vmin, 15px);
+  word-break: break-all;
+}
+
+.profile-signout-btn {
+  background: transparent;
+  border: 2px solid #0d4f14;
+  border-radius: 2px;
+  color: #0d4f14;
+  cursor: pointer;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: 13px;
+  padding: 6px 14px;
+}
+
+.community-inline-link {
+  color: #06400d;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .profile-mid {
   align-items: center;
   box-sizing: border-box;

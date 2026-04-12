@@ -24,7 +24,19 @@
     coneflower: "assets/coneflower 1.png",
   };
 
+  function useFirebaseSdk() {
+    return (
+      typeof global.firebase !== "undefined" &&
+      global.firebase.apps &&
+      global.firebase.apps.length > 0
+    );
+  }
+
   function getRtdbRoot() {
+    if (useFirebaseSdk()) {
+      var url = global.firebase.app().options.databaseURL;
+      if (url) return String(url).replace(/\/+$/, "");
+    }
     var u =
       global.PLANTIVITY_RTDB_URL && String(global.PLANTIVITY_RTDB_URL).trim();
     if (!u) return "";
@@ -33,6 +45,18 @@
 
   function rtdbUrl(path) {
     return getRtdbRoot() + path + ".json";
+  }
+
+  function getAuthUid() {
+    if (!useFirebaseSdk()) return null;
+    var u = global.firebase.auth().currentUser;
+    return u && u.uid ? String(u.uid) : null;
+  }
+
+  function getMyProfileKey() {
+    var uid = getAuthUid();
+    if (uid) return uid;
+    return getOrCreateDeviceId();
   }
 
   function safeParseJson(raw) {
@@ -149,6 +173,19 @@
   }
 
   function loadCommunityProfiles() {
+    if (useFirebaseSdk()) {
+      if (!getAuthUid()) {
+        return Promise.reject(new Error("auth_required"));
+      }
+      return global.firebase
+        .database()
+        .ref("plantivity/profiles")
+        .once("value")
+        .then(function (snap) {
+          return profilesPayloadFromRtdb(snap.val());
+        });
+    }
+
     var root = getRtdbRoot();
     if (!root) {
       return Promise.reject(new Error("no_rtdb"));
@@ -168,17 +205,34 @@
   }
 
   function upsertMyPublicProfile(options) {
-    var root = getRtdbRoot();
-    if (!root) {
-      return Promise.resolve();
-    }
-    var deviceId = getOrCreateDeviceId();
     var rawName =
       options && options.username != null
         ? options.username
         : getProfileUsername();
     var flower = (options && options.flower) || getProfileFlower();
     var trimmed = String(rawName || "").trim();
+
+    if (useFirebaseSdk()) {
+      var uid = getAuthUid();
+      if (!uid) {
+        return Promise.reject(new Error("not_signed_in"));
+      }
+      var ref = global.firebase.database().ref("plantivity/profiles/" + uid);
+      if (!trimmed) {
+        return ref.remove();
+      }
+      return ref.set({
+        username: trimmed,
+        flower: flower,
+        updatedAt: Date.now(),
+      });
+    }
+
+    var root = getRtdbRoot();
+    if (!root) {
+      return Promise.resolve();
+    }
+    var deviceId = getOrCreateDeviceId();
     var childUrl = rtdbUrl("/plantivity/profiles/" + encodeURIComponent(deviceId));
 
     if (!trimmed) {
@@ -211,8 +265,62 @@
       });
   }
 
+  function pullRemoteProfileToLocal() {
+    var uid = getAuthUid();
+    if (!uid || !useFirebaseSdk()) {
+      return Promise.resolve();
+    }
+    return global.firebase
+      .database()
+      .ref("plantivity/profiles/" + uid)
+      .once("value")
+      .then(function (snap) {
+        var v = snap.val();
+        if (v && typeof v === "object") {
+          if (v.username != null) setProfileUsername(String(v.username));
+          if (v.flower != null) setProfileFlower(String(v.flower));
+        }
+      });
+  }
+
+  function signInWithEmailPassword(email, password) {
+    if (!useFirebaseSdk()) {
+      return Promise.reject(new Error("firebase_not_configured"));
+    }
+    return global.firebase
+      .auth()
+      .signInWithEmailAndPassword(String(email).trim(), String(password));
+  }
+
+  function signUpWithEmailPassword(email, password) {
+    if (!useFirebaseSdk()) {
+      return Promise.reject(new Error("firebase_not_configured"));
+    }
+    return global.firebase
+      .auth()
+      .createUserWithEmailAndPassword(String(email).trim(), String(password));
+  }
+
+  function signOutFirebase() {
+    if (!useFirebaseSdk()) return Promise.resolve();
+    return global.firebase.auth().signOut();
+  }
+
+  function onAuthStateChanged(cb) {
+    if (!useFirebaseSdk()) {
+      global.setTimeout(function () {
+        cb(null);
+      }, 0);
+      return function () {};
+    }
+    return global.firebase.auth().onAuthStateChanged(cb);
+  }
+
   global.PlantivitySocial = {
+    useFirebaseSdk: useFirebaseSdk,
     getRtdbRoot: getRtdbRoot,
+    getAuthUid: getAuthUid,
+    getMyProfileKey: getMyProfileKey,
     FLOWER_IMG: FLOWER_IMG,
     GARDEN_KEYS: GARDEN_KEYS,
     getOrCreateDeviceId: getOrCreateDeviceId,
@@ -228,5 +336,10 @@
     },
     upsertMyPublicProfile: upsertMyPublicProfile,
     loadCommunityProfiles: loadCommunityProfiles,
+    pullRemoteProfileToLocal: pullRemoteProfileToLocal,
+    signInWithEmailPassword: signInWithEmailPassword,
+    signUpWithEmailPassword: signUpWithEmailPassword,
+    signOutFirebase: signOutFirebase,
+    onAuthStateChanged: onAuthStateChanged,
   };
 })(window);

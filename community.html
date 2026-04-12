@@ -43,7 +43,11 @@
         </footer>
       </div>
     </main>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
     <script src="plantivity-rtdb.js"></script>
+    <script src="plantivity-firebase-config.js"></script>
     <script src="plantivity-social.js"></script>
     <script>
       (function () {
@@ -51,8 +55,6 @@
         var grid = document.getElementById("community-grid");
         var statusEl = document.getElementById("community-status");
         if (!PS || !grid) return;
-
-        var mine = PS.getOrCreateDeviceId();
 
         function card(profile) {
           var article = document.createElement("article");
@@ -75,34 +77,53 @@
           return article;
         }
 
-        statusEl.textContent = "Loading…";
+        function runLoad() {
+          var mine = PS.getMyProfileKey();
+          statusEl.textContent = "Loading…";
 
-        if (!PS.getRtdbRoot()) {
-          statusEl.textContent =
-            "Set window.PLANTIVITY_RTDB_URL in plantivity-rtdb.js to load community profiles.";
-          return;
+          if (PS.useFirebaseSdk() && !PS.getAuthUid()) {
+            statusEl.innerHTML =
+              "Sign in on <a class=\"community-inline-link\" href=\"profile.html\">My Profile</a> with your email to view the community.";
+            grid.innerHTML = "";
+            return;
+          }
+
+          if (!PS.getRtdbRoot()) {
+            statusEl.textContent =
+              "Add your Firebase web config in plantivity-firebase-config.js (or set PLANTIVITY_RTDB_URL in plantivity-rtdb.js).";
+            return;
+          }
+
+          PS.loadCommunityProfiles()
+            .then(function (list) {
+              statusEl.textContent = "";
+              grid.innerHTML = "";
+              var others = list.filter(function (p) {
+                return p.deviceId !== mine;
+              });
+              if (others.length < 1) {
+                statusEl.textContent =
+                  "No other gardeners yet. Ask friends to create an account and set a username on Profile.";
+                return;
+              }
+              for (var i = 0; i < others.length; i += 1) {
+                grid.appendChild(card(others[i]));
+              }
+            })
+            .catch(function (err) {
+              if (err && err.message === "auth_required") {
+                statusEl.innerHTML =
+                  "Sign in on <a class=\"community-inline-link\" href=\"profile.html\">My Profile</a> to view the community.";
+                return;
+              }
+              statusEl.textContent =
+                "Could not load community. Check plantivity-firebase-config.js, Authentication, and Realtime Database rules.";
+            });
         }
 
-        PS.loadCommunityProfiles()
-          .then(function (list) {
-            statusEl.textContent = "";
-            grid.innerHTML = "";
-            var others = list.filter(function (p) {
-              return p.deviceId !== mine;
-            });
-            if (others.length < 1) {
-              statusEl.textContent =
-                "No other gardeners yet. Set a username on another device (with the same Firebase rules) to see them here.";
-              return;
-            }
-            for (var i = 0; i < others.length; i += 1) {
-              grid.appendChild(card(others[i]));
-            }
-          })
-          .catch(function () {
-            statusEl.textContent =
-              "Could not load community. Confirm your Firebase Realtime Database URL and security rules in plantivity-rtdb.js, then try again.";
-          });
+        PS.onAuthStateChanged(function () {
+          runLoad();
+        });
       })();
     </script>
   </body>

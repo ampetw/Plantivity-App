@@ -1,23 +1,24 @@
 /**
- * Community sync uses Firebase Realtime Database REST (CORS-friendly).
+ * Fallback database URL when you are not using plantivity-firebase-config.js
+ * (REST only, no Email auth). Prefer filling PLANTIVITY_FIREBASE_CONFIG there:
+ * the same databaseURL is applied automatically after firebase.initializeApp.
  *
- * Create a Realtime Database in the Firebase console, then set rules so
- * `plantivity/profiles` is readable and each client can write its own key
- * (test rules for a class demo):
+ * With Email/Password auth, use Realtime Database rules such as:
  *
  * {
  *   "rules": {
  *     "plantivity": {
  *       "profiles": {
- *         ".read": true,
- *         ".write": true
+ *         ".read": "auth != null",
+ *         "$uid": {
+ *           ".write": "auth != null && auth.uid == $uid"
+ *         }
  *       }
  *     }
  *   }
  * }
  *
- * If the default project URL is not yours, change it below to the
- * "database URL" shown in Firebase (no trailing slash).
+ * Open rules (read/write true on profiles) only for local testing without Auth.
  */
 if (typeof window.PLANTIVITY_RTDB_URL === "undefined") {
   window.PLANTIVITY_RTDB_URL =
