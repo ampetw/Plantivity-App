@@ -11,12 +11,21 @@
   </head>
   <body class="choose-timer-body profile-body">
     <main class="choose-timer-main profile-main" aria-label="My profile">
-      <div class="profile-bg" aria-hidden="true"></div>
+      <img
+        class="choose-timer-bg"
+        src="assets/background color 5.png"
+        alt=""
+      />
       <div class="profile-stack">
         <header class="profile-banner">
-          <h1 class="profile-banner-title">My Profile</h1>
+          <img
+            class="profile-header-img"
+            src="assets/my profile header.png"
+            alt="My Profile"
+          />
         </header>
 
+        <div class="profile-mid">
         <div class="profile-uname-block">
           <button type="button" class="profile-uname-label-btn" id="profile-uname-label">
             Username
@@ -54,7 +63,8 @@
         <p class="profile-stat" id="profile-stat-flowers"></p>
         <p class="profile-stat" id="profile-stat-time"></p>
 
-        <a class="profile-public-link" href="community.html">View Public Profile</a>
+        <p class="profile-sync-hint" id="profile-sync-status" aria-live="polite"></p>
+        </div>
 
         <div
           class="profile-picker"
@@ -72,8 +82,6 @@
             </button>
           </div>
         </div>
-
-        <p class="profile-sync-hint" id="profile-sync-status" aria-live="polite"></p>
 
         <footer class="choose-timer-footer profile-footer">
           <a class="choose-timer-leaf-link" href="index.html">

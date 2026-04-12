@@ -1503,19 +1503,11 @@ a.timer-card--link {
   width: 100%;
 }
 
-/* Profile + Community */
+/* Profile + Community (same full-bleed bg as choose timer) */
 .profile-main,
 .community-main {
   overflow-y: auto;
-}
-
-.profile-bg,
-.community-bg {
-  background: linear-gradient(180deg, #c4dbb8 0%, #adbf9e 100%);
-  inset: 0;
-  pointer-events: none;
-  position: absolute;
-  z-index: 0;
+  position: relative;
 }
 
 .community-stack,
@@ -1524,10 +1516,10 @@ a.timer-card--link {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  height: 100%;
   min-height: 100%;
-  padding: calc(12px + env(safe-area-inset-top, 0px)) 16px
-    calc(10px + env(safe-area-inset-bottom, 0px));
+  padding: calc(8px + env(safe-area-inset-top, 0px)) 20px
+    calc(16px + env(safe-area-inset-bottom, 0px));
   position: relative;
   width: 100%;
   z-index: 1;
@@ -1535,30 +1527,55 @@ a.timer-card--link {
 
 .profile-banner,
 .community-banner {
-  background: #0d4f14;
-  box-shadow: 4px 5px 0 rgba(0, 0, 0, 0.22);
   box-sizing: border-box;
-  padding: 12px 18px;
-  text-align: center;
-  width: min(320px, 100%);
+  flex-shrink: 0;
+  line-height: 0;
+  margin-top: 4px;
+  width: min(340px, 100%);
 }
 
-.profile-banner-title,
-.community-banner-title {
-  color: #fff;
-  font-family: "Pixelify Sans", sans-serif;
-  font-size: clamp(20px, 5.2vmin, 26px);
-  font-weight: 500;
-  line-height: 1.2;
-  margin: 0;
+.profile-header-img,
+.community-header-img {
+  display: block;
+  filter: drop-shadow(-4px 5px 0 rgba(0, 0, 0, 0.22));
+  height: auto;
+  image-rendering: pixelated;
+  margin: 0 auto;
+  max-width: min(320px, 100%);
+  width: 100%;
+}
+
+.profile-mid {
+  align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: space-evenly;
+  min-height: 0;
+  padding: 10px 0 6px;
+  width: 100%;
+}
+
+.community-mid {
+  align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: clamp(16px, 4vmin, 28px);
+  justify-content: space-evenly;
+  min-height: 0;
+  padding: 12px 0 8px;
+  width: 100%;
 }
 
 .profile-uname-block {
   align-items: center;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  width: min(320px, 100%);
+  gap: 10px;
+  width: min(340px, 100%);
 }
 
 .profile-uname-label-btn {
@@ -1567,10 +1584,10 @@ a.timer-card--link {
   color: #08380c;
   cursor: pointer;
   font-family: "Pixelify Sans", sans-serif;
-  font-size: clamp(14px, 4vmin, 16px);
-  padding: 4px 8px;
+  font-size: clamp(18px, 4.8vmin, 22px);
+  padding: 6px 10px;
   text-decoration: underline;
-  text-underline-offset: 3px;
+  text-underline-offset: 4px;
 }
 
 .profile-uname-view,
@@ -1582,7 +1599,7 @@ a.timer-card--link {
   color: #0b3d0f;
   display: block;
   font-family: "Pixelify Sans", sans-serif;
-  font-size: clamp(16px, 4.5vmin, 20px);
+  font-size: clamp(20px, 5.5vmin, 26px);
   text-align: center;
   word-break: break-word;
 }
@@ -1601,8 +1618,8 @@ a.timer-card--link {
   box-sizing: border-box;
   color: #0b3d0f;
   font-family: "Pixelify Sans", sans-serif;
-  font-size: 14px;
-  padding: 10px 12px;
+  font-size: clamp(15px, 4vmin, 18px);
+  padding: 12px 14px;
   text-align: center;
   width: 100%;
 }
@@ -1615,8 +1632,8 @@ a.timer-card--link {
   color: #fff;
   cursor: pointer;
   font-family: "Pixelify Sans", sans-serif;
-  font-size: 14px;
-  padding: 8px 20px;
+  font-size: clamp(15px, 4vmin, 17px);
+  padding: 10px 24px;
 }
 
 .profile-pack-btn {
@@ -1638,11 +1655,11 @@ a.timer-card--link {
 .profile-pack-frame {
   display: block;
   filter: drop-shadow(-3px 4px 0 rgba(0, 0, 0, 0.2));
-  height: min(200px, 42vmin);
+  height: min(280px, 56vmin);
   position: relative;
   transform: translateZ(0);
   transition: transform 140ms ease, filter 140ms ease;
-  width: min(150px, 40vw);
+  width: min(210px, 54vw);
 }
 
 .profile-pack-btn:hover .profile-pack-frame {
@@ -1685,7 +1702,7 @@ a.timer-card--link {
   align-self: center;
   color: #0d3d0d;
   font-family: "Pixelify Sans", sans-serif;
-  font-size: clamp(9px, 2.4vmin, 11px);
+  font-size: clamp(11px, 3vmin, 14px);
   letter-spacing: 0.04em;
   text-align: center;
 }
@@ -1712,30 +1729,16 @@ a.timer-card--link {
 .profile-stat {
   color: #08380c;
   font-family: "Pixelify Sans", sans-serif;
-  font-size: clamp(13px, 3.6vmin, 15px);
+  font-size: clamp(16px, 4.2vmin, 20px);
+  line-height: 1.35;
   margin: 0;
   text-align: center;
-}
-
-.profile-public-link {
-  color: #06400d;
-  font-family: "Pixelify Sans", sans-serif;
-  font-size: clamp(13px, 3.5vmin, 15px);
-  margin-top: 4px;
-  text-align: center;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.profile-public-link:focus-visible {
-  outline: 3px solid #0a6b12;
-  outline-offset: 3px;
 }
 
 .profile-sync-hint {
   color: #2d4a24;
   font-family: "Pixelify Sans", sans-serif;
-  font-size: 12px;
+  font-size: clamp(12px, 3.2vmin, 14px);
   margin: 0;
   min-height: 1.2em;
   text-align: center;
@@ -1827,19 +1830,20 @@ a.timer-card--link {
 .community-status {
   color: #1a3818;
   font-family: "Pixelify Sans", sans-serif;
-  font-size: 12px;
-  line-height: 1.35;
+  font-size: clamp(13px, 3.5vmin, 16px);
+  line-height: 1.4;
   margin: 0;
-  max-width: 320px;
+  max-width: 340px;
   text-align: center;
 }
 
 .community-grid {
-  column-gap: 12px;
+  column-gap: 14px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  row-gap: 12px;
-  width: min(336px, 100%);
+  flex: 0 1 auto;
+  row-gap: 14px;
+  width: min(340px, 100%);
 }
 
 .community-card {
@@ -1855,9 +1859,9 @@ a.timer-card--link {
   background: #d9c4a4;
   color: #0b3d0f;
   font-family: "Pixelify Sans", sans-serif;
-  font-size: 10px;
+  font-size: clamp(11px, 2.8vmin, 13px);
   overflow: hidden;
-  padding: 8px 6px;
+  padding: 10px 8px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1875,7 +1879,7 @@ a.timer-card--link {
   display: block;
   height: auto;
   image-rendering: pixelated;
-  max-width: 76px;
+  max-width: 88px;
   width: 100%;
 }
 
