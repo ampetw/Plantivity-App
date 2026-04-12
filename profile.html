@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>My Profile — Plantivity</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="choose-timer-body profile-body">
+    <main class="choose-timer-main profile-main" aria-label="My profile">
+      <div class="profile-bg" aria-hidden="true"></div>
+      <div class="profile-stack">
+        <header class="profile-banner">
+          <h1 class="profile-banner-title">My Profile</h1>
+        </header>
+
+        <div class="profile-uname-block">
+          <button type="button" class="profile-uname-label-btn" id="profile-uname-label">
+            Username
+          </button>
+          <div class="profile-uname-view" id="profile-uname-view">
+            <span class="profile-uname-text" id="profile-uname-text"></span>
+          </div>
+          <div class="profile-uname-edit" id="profile-uname-edit" hidden>
+            <label class="visually-hidden" for="profile-uname-input">Edit username</label>
+            <input
+              id="profile-uname-input"
+              class="profile-uname-input"
+              type="text"
+              maxlength="28"
+              autocomplete="nickname"
+            />
+            <button type="button" class="profile-uname-apply" id="profile-uname-apply">
+              Save
+            </button>
+          </div>
+        </div>
+
+        <button type="button" class="profile-pack-btn" id="profile-pack-open" aria-haspopup="dialog" aria-expanded="false">
+          <span class="profile-pack-frame">
+            <img class="profile-pack-bg" src="assets/pack.png" alt="" />
+            <span class="profile-pack-face">
+              <span class="profile-pack-tag">profile icon</span>
+              <span class="profile-pack-flower-wrap">
+                <img class="profile-pack-flower" id="profile-pack-flower" src="" alt="" />
+              </span>
+            </span>
+          </span>
+        </button>
+
+        <p class="profile-stat" id="profile-stat-flowers"></p>
+        <p class="profile-stat" id="profile-stat-time"></p>
+
+        <a class="profile-public-link" href="community.html">View Public Profile</a>
+
+        <div
+          class="profile-picker"
+          id="profile-flower-picker"
+          hidden
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="profile-picker-title"
+        >
+          <div class="profile-picker-panel">
+            <p class="profile-picker-title" id="profile-picker-title">Choose profile flower</p>
+            <div class="profile-picker-grid" id="profile-picker-grid"></div>
+            <button type="button" class="profile-picker-close" id="profile-picker-close">
+              Close
+            </button>
+          </div>
+        </div>
+
+        <p class="profile-sync-hint" id="profile-sync-status" aria-live="polite"></p>
+
+        <footer class="choose-timer-footer profile-footer">
+          <a class="choose-timer-leaf-link" href="index.html">
+            <img
+              class="choose-timer-leaf"
+              src="assets/leaf logo 1.png"
+              alt="Back to garden"
+              width="48"
+              height="50"
+            />
+          </a>
+        </footer>
+      </div>
+    </main>
+    <script src="plantivity-rtdb.js"></script>
+    <script src="plantivity-social.js"></script>
+    <script>
+      (function () {
+        var PS = window.PlantivitySocial;
+        if (!PS) return;
+
+        var labelBtn = document.getElementById("profile-uname-label");
+        var viewEl = document.getElementById("profile-uname-view");
+        var editEl = document.getElementById("profile-uname-edit");
+        var textEl = document.getElementById("profile-uname-text");
+        var inputEl = document.getElementById("profile-uname-input");
+        var applyBtn = document.getElementById("profile-uname-apply");
+        var packBtn = document.getElementById("profile-pack-open");
+        var packFlower = document.getElementById("profile-pack-flower");
+        var picker = document.getElementById("profile-flower-picker");
+        var pickerGrid = document.getElementById("profile-picker-grid");
+        var pickerClose = document.getElementById("profile-picker-close");
+        var syncStatus = document.getElementById("profile-sync-status");
+
+        function setSyncMessage(msg) {
+          if (syncStatus) syncStatus.textContent = msg || "";
+        }
+
+        function renderUname() {
+          var u = PS.getProfileUsername();
+          textEl.textContent = u || "(not set)";
+        }
+
+        function renderPackFlower() {
+          var f = PS.getProfileFlower();
+          packFlower.src = PS.flowerImageFor(f);
+          packFlower.alt = f;
+        }
+
+        function renderStats() {
+          var s = PS.getGardenStats();
+          document.getElementById("profile-stat-flowers").textContent =
+            "Total Flowers: " + String(s.totalFlowers);
+          document.getElementById("profile-stat-time").textContent =
+            "Total Time: " + PS.formatGardenDuration(s.totalMs);
+        }
+
+        function openEdit() {
+          editEl.hidden = false;
+          viewEl.hidden = true;
+          inputEl.value = PS.getProfileUsername();
+          inputEl.focus();
+          inputEl.select();
+        }
+
+        function closeEdit() {
+          editEl.hidden = true;
+          viewEl.hidden = false;
+        }
+
+        function saveUsername() {
+          PS.setProfileUsername(inputEl.value);
+          renderUname();
+          closeEdit();
+          if (!PS.getRtdbRoot()) {
+            setSyncMessage("Saved on this device.");
+            window.setTimeout(function () {
+              setSyncMessage("");
+            }, 2200);
+            return;
+          }
+          setSyncMessage("Saving…");
+          PS.upsertMyPublicProfile({})
+            .then(function () {
+              setSyncMessage("Profile saved to community.");
+              window.setTimeout(function () {
+                setSyncMessage("");
+              }, 2400);
+            })
+            .catch(function () {
+              setSyncMessage("Saved on this device; community sync failed.");
+            });
+        }
+
+        labelBtn.addEventListener("click", function () {
+          openEdit();
+        });
+
+        applyBtn.addEventListener("click", function () {
+          saveUsername();
+        });
+
+        inputEl.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") saveUsername();
+          if (e.key === "Escape") {
+            closeEdit();
+            inputEl.value = PS.getProfileUsername();
+          }
+        });
+
+        function buildPicker() {
+          pickerGrid.innerHTML = "";
+          var keys = ["tulip", "daisy", "iris", "coneflower"];
+          for (var i = 0; i < keys.length; i += 1) {
+            var k = keys[i];
+            var b = document.createElement("button");
+            b.type = "button";
+            b.className = "profile-picker-choice";
+            b.setAttribute("data-flower", k);
+            var img = document.createElement("img");
+            img.src = PS.flowerImageFor(k);
+            img.alt = k;
+            b.appendChild(img);
+            b.addEventListener("click", function () {
+              var flower = this.getAttribute("data-flower");
+              PS.setProfileFlower(flower);
+              renderPackFlower();
+              closePicker();
+              if (!PS.getRtdbRoot()) {
+                setSyncMessage("Flower saved on this device.");
+                window.setTimeout(function () {
+                  setSyncMessage("");
+                }, 2000);
+                return;
+              }
+              setSyncMessage("Saving…");
+              PS.upsertMyPublicProfile({})
+                .then(function () {
+                  setSyncMessage("Profile icon updated.");
+                  window.setTimeout(function () {
+                    setSyncMessage("");
+                  }, 2200);
+                })
+                .catch(function () {
+                  setSyncMessage("Flower saved locally; community sync failed.");
+                });
+            });
+            pickerGrid.appendChild(b);
+          }
+        }
+
+        function openPicker() {
+          picker.hidden = false;
+          packBtn.setAttribute("aria-expanded", "true");
+        }
+
+        function closePicker() {
+          picker.hidden = true;
+          packBtn.setAttribute("aria-expanded", "false");
+        }
+
+        packBtn.addEventListener("click", function () {
+          openPicker();
+        });
+
+        pickerClose.addEventListener("click", function () {
+          closePicker();
+        });
+
+        picker.addEventListener("click", function (e) {
+          if (e.target === picker) closePicker();
+        });
+
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && !picker.hidden) closePicker();
+        });
+
+        PS.getOrCreateDeviceId();
+        renderUname();
+        renderPackFlower();
+        renderStats();
+        buildPicker();
+      })();
+    </script>
+  </body>
+</html>

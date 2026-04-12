@@ -1,0 +1,232 @@
+(function (global) {
+  var STORAGE_DEVICE = "plantivityDeviceId";
+  var STORAGE_USERNAME = "plantivityProfileUsername";
+  var STORAGE_FLOWER = "plantivityProfileFlower";
+
+  var GARDEN_KEYS = [
+    { key: "plantivityGardenTulips", flower: "tulip" },
+    { key: "plantivityGardenDaisies", flower: "daisy" },
+    { key: "plantivityGardenIrises", flower: "iris" },
+    { key: "plantivityGardenConeflowers", flower: "coneflower" },
+  ];
+
+  var DEFAULT_DURATION_MS = {
+    tulip: 600000,
+    daisy: 300000,
+    iris: 1800000,
+    coneflower: 3600000,
+  };
+
+  var FLOWER_IMG = {
+    tulip: "assets/tulip 1.png",
+    daisy: "assets/daisy 1.png",
+    iris: "assets/iris 1.png",
+    coneflower: "assets/coneflower 1.png",
+  };
+
+  function getRtdbRoot() {
+    var u =
+      global.PLANTIVITY_RTDB_URL && String(global.PLANTIVITY_RTDB_URL).trim();
+    if (!u) return "";
+    return u.replace(/\/+$/, "");
+  }
+
+  function rtdbUrl(path) {
+    return getRtdbRoot() + path + ".json";
+  }
+
+  function safeParseJson(raw) {
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function readGardenList(key) {
+    var raw = global.localStorage.getItem(key);
+    var parsed = safeParseJson(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  }
+
+  function itemDurationMs(entry, flowerFallback) {
+    if (!entry || typeof entry !== "object") return 0;
+    var n = parseInt(entry.durationMs, 10);
+    if (!isNaN(n) && n > 0) return n;
+    var f = entry.flower || flowerFallback;
+    return DEFAULT_DURATION_MS[f] || 0;
+  }
+
+  function getGardenStats() {
+    var totalFlowers = 0;
+    var totalMs = 0;
+    for (var i = 0; i < GARDEN_KEYS.length; i += 1) {
+      var g = GARDEN_KEYS[i];
+      var list = readGardenList(g.key);
+      for (var j = 0; j < list.length; j += 1) {
+        var it = list[j];
+        if (!it || !it.id) continue;
+        totalFlowers += 1;
+        totalMs += itemDurationMs(it, g.flower);
+      }
+    }
+    return { totalFlowers: totalFlowers, totalMs: totalMs };
+  }
+
+  function formatGardenDuration(totalMs) {
+    var m = Math.round(totalMs / 60000);
+    if (m <= 0) return "0 min";
+    if (m < 60) return m + " min";
+    var h = Math.floor(m / 60);
+    var r = m % 60;
+    if (r === 0) return h + (h === 1 ? " hr" : " hrs");
+    return h + " hr " + r + " min";
+  }
+
+  function getOrCreateDeviceId() {
+    var existing = global.localStorage.getItem(STORAGE_DEVICE);
+    if (existing && String(existing).length > 4) return String(existing);
+    var id =
+      global.crypto && global.crypto.randomUUID
+        ? global.crypto.randomUUID()
+        : "pv_" + String(Date.now()) + "_" + String(Math.floor(Math.random() * 1e9));
+    global.localStorage.setItem(STORAGE_DEVICE, id);
+    return id;
+  }
+
+  function getProfileUsername() {
+    return String(global.localStorage.getItem(STORAGE_USERNAME) || "").trim();
+  }
+
+  function setProfileUsername(name) {
+    global.localStorage.setItem(STORAGE_USERNAME, String(name || "").trim());
+  }
+
+  function getProfileFlower() {
+    var f = String(global.localStorage.getItem(STORAGE_FLOWER) || "tulip").toLowerCase();
+    if (!FLOWER_IMG[f]) return "tulip";
+    return f;
+  }
+
+  function setProfileFlower(flower) {
+    var f = String(flower || "tulip").toLowerCase();
+    if (!FLOWER_IMG[f]) f = "tulip";
+    global.localStorage.setItem(STORAGE_FLOWER, f);
+  }
+
+  function profilesPayloadFromRtdb(data) {
+    if (data === null) return [];
+    if (!data || typeof data !== "object") return [];
+    if (data.error) return [];
+    var out = [];
+    var ids = Object.keys(data);
+    for (var i = 0; i < ids.length; i += 1) {
+      var id = ids[i];
+      var row = data[id];
+      if (!row || typeof row !== "object") continue;
+      var u = String(row.username || "").trim();
+      if (!u) continue;
+      var fl = String(row.flower || "tulip").toLowerCase();
+      if (!FLOWER_IMG[fl]) fl = "tulip";
+      out.push({
+        deviceId: id,
+        username: u,
+        flower: fl,
+        flowerImg: FLOWER_IMG[fl],
+        updatedAt: row.updatedAt || 0,
+      });
+    }
+    out.sort(function (a, b) {
+      if (a.username.toLowerCase() !== b.username.toLowerCase()) {
+        return a.username.localeCompare(b.username, undefined, {
+          sensitivity: "base",
+        });
+      }
+      return String(a.deviceId).localeCompare(String(b.deviceId));
+    });
+    return out;
+  }
+
+  function loadCommunityProfiles() {
+    var root = getRtdbRoot();
+    if (!root) {
+      return Promise.reject(new Error("no_rtdb"));
+    }
+    return global
+      .fetch(rtdbUrl("/plantivity/profiles"), { cache: "no-store" })
+      .then(function (res) {
+        return res.json().then(function (data) {
+          if (!res.ok) {
+            var err = new Error("community_http");
+            err.data = data;
+            throw err;
+          }
+          return profilesPayloadFromRtdb(data);
+        });
+      });
+  }
+
+  function upsertMyPublicProfile(options) {
+    var root = getRtdbRoot();
+    if (!root) {
+      return Promise.resolve();
+    }
+    var deviceId = getOrCreateDeviceId();
+    var rawName =
+      options && options.username != null
+        ? options.username
+        : getProfileUsername();
+    var flower = (options && options.flower) || getProfileFlower();
+    var trimmed = String(rawName || "").trim();
+    var childUrl = rtdbUrl("/plantivity/profiles/" + encodeURIComponent(deviceId));
+
+    if (!trimmed) {
+      return global.fetch(childUrl, { method: "DELETE", cache: "no-store" }).then(
+        function (res) {
+          if (!res.ok && res.status !== 404) throw new Error("delete_failed");
+        }
+      );
+    }
+
+    return global
+      .fetch(childUrl, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: trimmed,
+          flower: flower,
+          updatedAt: Date.now(),
+        }),
+        cache: "no-store",
+      })
+      .then(function (res) {
+        if (!res.ok) {
+          return res.json().then(function (body) {
+            var err = new Error("put_failed");
+            err.data = body;
+            throw err;
+          });
+        }
+      });
+  }
+
+  global.PlantivitySocial = {
+    getRtdbRoot: getRtdbRoot,
+    FLOWER_IMG: FLOWER_IMG,
+    GARDEN_KEYS: GARDEN_KEYS,
+    getOrCreateDeviceId: getOrCreateDeviceId,
+    getGardenStats: getGardenStats,
+    formatGardenDuration: formatGardenDuration,
+    getProfileUsername: getProfileUsername,
+    setProfileUsername: setProfileUsername,
+    getProfileFlower: getProfileFlower,
+    setProfileFlower: setProfileFlower,
+    flowerImageFor: function (flower) {
+      var f = String(flower || "tulip").toLowerCase();
+      return FLOWER_IMG[f] || FLOWER_IMG.tulip;
+    },
+    upsertMyPublicProfile: upsertMyPublicProfile,
+    loadCommunityProfiles: loadCommunityProfiles,
+  };
+})(window);

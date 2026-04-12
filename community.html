@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Community — Plantivity</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="choose-timer-body community-body">
+    <main class="choose-timer-main community-main" aria-label="Community profiles">
+      <div class="community-bg" aria-hidden="true"></div>
+      <div class="community-stack">
+        <header class="community-banner">
+          <h1 class="community-banner-title">Community</h1>
+        </header>
+
+        <p class="community-status" id="community-status" aria-live="polite"></p>
+
+        <div class="community-grid" id="community-grid"></div>
+
+        <footer class="choose-timer-footer community-footer">
+          <a class="choose-timer-leaf-link" href="index.html">
+            <img
+              class="choose-timer-leaf"
+              src="assets/leaf logo 1.png"
+              alt="Back to garden"
+              width="48"
+              height="50"
+            />
+          </a>
+        </footer>
+      </div>
+    </main>
+    <script src="plantivity-rtdb.js"></script>
+    <script src="plantivity-social.js"></script>
+    <script>
+      (function () {
+        var PS = window.PlantivitySocial;
+        var grid = document.getElementById("community-grid");
+        var statusEl = document.getElementById("community-status");
+        if (!PS || !grid) return;
+
+        var mine = PS.getOrCreateDeviceId();
+
+        function card(profile) {
+          var article = document.createElement("article");
+          article.className = "community-card";
+
+          var top = document.createElement("div");
+          top.className = "community-card-user";
+          top.textContent = profile.username;
+
+          var body = document.createElement("div");
+          body.className = "community-card-body";
+          var img = document.createElement("img");
+          img.className = "community-card-flower";
+          img.src = profile.flowerImg;
+          img.alt = "";
+          body.appendChild(img);
+
+          article.appendChild(top);
+          article.appendChild(body);
+          return article;
+        }
+
+        statusEl.textContent = "Loading…";
+
+        if (!PS.getRtdbRoot()) {
+          statusEl.textContent =
+            "Set window.PLANTIVITY_RTDB_URL in plantivity-rtdb.js to load community profiles.";
+          return;
+        }
+
+        PS.loadCommunityProfiles()
+          .then(function (list) {
+            statusEl.textContent = "";
+            grid.innerHTML = "";
+            var others = list.filter(function (p) {
+              return p.deviceId !== mine;
+            });
+            if (others.length < 1) {
+              statusEl.textContent =
+                "No other gardeners yet. Set a username on another device (with the same Firebase rules) to see them here.";
+              return;
+            }
+            for (var i = 0; i < others.length; i += 1) {
+              grid.appendChild(card(others[i]));
+            }
+          })
+          .catch(function () {
+            statusEl.textContent =
+              "Could not load community. Confirm your Firebase Realtime Database URL and security rules in plantivity-rtdb.js, then try again.";
+          });
+      })();
+    </script>
+  </body>
+</html>
