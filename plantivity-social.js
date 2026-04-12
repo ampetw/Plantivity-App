@@ -25,11 +25,14 @@
   };
 
   function useFirebaseSdk() {
-    return (
-      typeof global.firebase !== "undefined" &&
-      global.firebase.apps &&
-      global.firebase.apps.length > 0
-    );
+    var fb = global.firebase;
+    if (!fb || typeof fb.app !== "function") return false;
+    try {
+      fb.app();
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   function getRtdbRoot() {

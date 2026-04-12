@@ -14,13 +14,31 @@ window.PLANTIVITY_FIREBASE_CONFIG = {
 };
 
 (function () {
-  var cfg = window.PLANTIVITY_FIREBASE_CONFIG;
-  if (typeof firebase === "undefined" || !cfg || !String(cfg.apiKey || "").trim()) {
+  var root =
+    typeof globalThis !== "undefined"
+      ? globalThis
+      : typeof window !== "undefined"
+        ? window
+        : typeof self !== "undefined"
+          ? self
+          : {};
+  var cfg = root.PLANTIVITY_FIREBASE_CONFIG;
+  if (cfg && cfg.databaseURL) {
+    root.PLANTIVITY_RTDB_URL = String(cfg.databaseURL).replace(/\/+$/, "");
+  }
+  var fb = root.firebase;
+  if (typeof fb === "undefined" || !fb || !cfg || !String(cfg.apiKey || "").trim()) {
     return;
   }
-  if (firebase.apps && firebase.apps.length > 0) return;
-  firebase.initializeApp(cfg);
-  if (cfg.databaseURL) {
-    window.PLANTIVITY_RTDB_URL = String(cfg.databaseURL).replace(/\/+$/, "");
+  if (fb.apps && fb.apps.length > 0) return;
+  try {
+    fb.initializeApp(cfg);
+  } catch (e) {
+    if (typeof console !== "undefined" && console.error) {
+      console.error(
+        "Plantivity: Firebase initializeApp failed. Copy the web config from Firebase Console → Project settings → Your apps, and ensure this site’s domain is listed under Authentication → Settings → Authorized domains.",
+        e
+      );
+    }
   }
 })();
