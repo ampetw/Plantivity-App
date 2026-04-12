@@ -21,5 +21,6 @@
  */
 if (typeof window.PLANTIVITY_RTDB_URL === "undefined") {
   window.PLANTIVITY_RTDB_URL =
-    "https://plantivity-community-default-rtdb.firebaseio.com";
+    "https://plantivity-64869-default-rtdb.firebaseio.com"; // <-- Corrected URL
 }
+
