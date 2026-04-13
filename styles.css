@@ -2000,10 +2000,10 @@ a.timer-card--link {
 .community-card-pack-frame {
   display: block;
   filter: drop-shadow(-2px 3px 0 rgba(0, 0, 0, 0.18));
-  height: min(132px, 34vmin);
+  height: min(180px, 46vmin);
   margin: 0 auto;
   position: relative;
-  width: min(118px, 42vw);
+  width: min(160px, 46vw);
 }
 
 .community-card-pack-bg {
@@ -2032,7 +2032,7 @@ a.timer-card--link {
   align-self: center;
   color: #0d3d0d;
   font-family: "Pixelify Sans", sans-serif;
-  font-size: clamp(9px, 2.4vmin, 11px);
+  font-size: clamp(11px, 2.8vmin, 13px);
   line-height: 1.15;
   max-width: 100%;
   overflow: hidden;
@@ -2048,7 +2048,7 @@ a.timer-card--link {
   justify-content: center;
   max-height: 100%;
   min-height: 0;
-  padding: 0 2% 6%;
+  padding: 0 2% 8%;
   width: 100%;
 }
 
@@ -2057,7 +2057,7 @@ a.timer-card--link {
   height: auto;
   image-rendering: pixelated;
   max-height: 100%;
-  max-width: 78%;
+  max-width: 88%;
   object-fit: contain;
   width: auto;
 }
