@@ -141,13 +141,25 @@
     var id = uid != null ? String(uid).trim() : "";
     if (!id) return Promise.reject(new Error("no_uid"));
     if (useFirebaseSdk()) {
-      if (!getAuthUid()) return Promise.reject(new Error("auth_required"));
-      return global.firebase
-        .database()
-        .ref("plantivity/gardens/" + id)
-        .once("value")
+      var cur = global.firebase.auth().currentUser;
+      if (!cur) return Promise.reject(new Error("auth_required"));
+      return cur
+        .getIdToken(false)
+        .then(function () {
+          return global.firebase
+            .database()
+            .ref("plantivity/gardens/" + id)
+            .once("value");
+        })
         .then(function (snap) {
           return normalizeGardenFromRemote(snap.val());
+        })
+        .catch(function (err) {
+          var e = new Error(
+            err && err.message ? err.message : "firebase_garden_read_failed"
+          );
+          if (err && err.code) e.code = err.code;
+          return Promise.reject(e);
         });
     }
     var root = getRtdbRoot();

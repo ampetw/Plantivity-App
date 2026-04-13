@@ -152,7 +152,8 @@
             if (ownerUid) {
               var empty = document.createElement("p");
               empty.className = "index-visitor-empty";
-              empty.textContent = "This garden has no flowers yet.";
+              empty.textContent =
+                "No flowers synced for Community yet. Flowers stay on this phone until you sign in on My Profile (or open Home while signed in)—then they upload for others to see.";
               host.appendChild(empty);
             }
             return;
@@ -232,7 +233,10 @@
               "<p class=\"index-visitor-empty\">Could not load gardens. Check Firebase configuration.</p>";
             return;
           }
+          var visitLoadId = 0;
           function go(user) {
+            visitLoadId += 1;
+            var loadId = visitLoadId;
             if (!user) {
               host.innerHTML = "";
               var w = document.createElement("p");
@@ -250,18 +254,36 @@
             }
             PS.loadUserGarden(uid)
               .then(function (garden) {
+                if (loadId !== visitLoadId) return;
                 var items = collectItemsFromGarden(garden);
                 renderGarden(items, uid);
               })
-              .catch(function () {
+              .catch(function (err) {
+                if (loadId !== visitLoadId) return;
+                if (typeof console !== "undefined" && console.error) {
+                  console.error("Plantivity: loadUserGarden failed", err);
+                }
+                var msg = "Could not load this garden.";
+                if (err && err.code === "PERMISSION_DENIED") {
+                  msg =
+                    "Could not load this garden (permission denied). In Firebase Console → Realtime Database → Rules, allow signed-in users to read plantivity/gardens (see the gardens block in plantivity-rtdb.js), then Publish.";
+                } else if (err && err.code === "UNAVAILABLE") {
+                  msg =
+                    "Could not reach the database. Check your network and that the Realtime Database is enabled for this Firebase project.";
+                }
                 host.innerHTML =
-                  "<p class=\"index-visitor-empty\">Could not load this garden.</p>";
+                  "<p class=\"index-visitor-empty\">" + msg + "</p>";
               });
           }
           if (PS.useFirebaseSdk()) {
-            PS.onAuthStateChanged(function (u) {
-              go(u);
-            });
+            var auth = firebase.auth();
+            if (typeof auth.authStateReady === "function") {
+              auth.authStateReady().then(function () {
+                auth.onAuthStateChanged(go);
+              });
+            } else {
+              PS.onAuthStateChanged(go);
+            }
           } else {
             go(null);
           }

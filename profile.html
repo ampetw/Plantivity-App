@@ -170,6 +170,19 @@
               renderUname();
               renderPackFlower();
             });
+            PS.syncMyGardenToCloud()
+              .then(function () {
+                var st = PS.getGardenStats();
+                var syncEl = document.getElementById("profile-sync-status");
+                if (syncEl && st && st.totalFlowers > 0) {
+                  syncEl.textContent =
+                    "Flowers on this device are now linked to your email for Community.";
+                  window.setTimeout(function () {
+                    syncEl.textContent = "";
+                  }, 5000);
+                }
+              })
+              .catch(function () {});
           }
         });
 
