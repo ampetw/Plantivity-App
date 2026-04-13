@@ -9,123 +9,145 @@
     <title>Plantivity</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
-  <body class="index-body">
-    <div class="index-scroll">
-      <main class="index-main" aria-label="Plantivity home screen">
-        <div class="index-bg-stack" aria-hidden="true">
-          <img
-            class="index-garden-bg"
-            src="assets/garden background.png"
-            alt=""
+  <body class="choose-timer-body profile-body">
+    <main class="choose-timer-main profile-main" aria-label="Sign in">
+      <div class="profile-stack">
+        <div class="profile-auth-section" id="home-auth-section" hidden>
+          <p class="profile-auth-intro">
+            Sign in with your email to save your profile and appear in Community.
+          </p>
+          <label class="visually-hidden" for="home-auth-email">Email</label>
+          <input
+            id="home-auth-email"
+            class="profile-auth-input"
+            type="email"
+            autocomplete="username"
+            placeholder="Email"
           />
-          <div class="index-bg-soil-extension"></div>
-        </div>
-        <div class="index-content-flow">
-          <div
-            class="index-garden-tulips"
-            id="garden-tulips"
-            aria-label="Flowers you have earned"
-          ></div>
-        </div>
-        <a class="index-new-timer-link" href="choose timer.html">
-          <img
-            class="index-new-timer-img"
-            src="assets/new timer button.png"
-            alt="New Timer"
+          <label class="visually-hidden" for="home-auth-password">Password</label>
+          <input
+            id="home-auth-password"
+            class="profile-auth-input"
+            type="password"
+            autocomplete="current-password"
+            placeholder="Password"
           />
-        </a>
-      </main>
-    </div>
+          <p class="profile-auth-error" id="home-auth-error" role="alert"></p>
+          <p class="profile-auth-forgot-wrap">
+            <a class="profile-auth-forgot" href="forgot-password.html">Forgot password?</a>
+          </p>
+          <div class="profile-auth-actions">
+            <button type="button" class="profile-auth-btn" id="home-auth-signin">
+              Sign in
+            </button>
+            <button
+              type="button"
+              class="profile-auth-btn profile-auth-btn--secondary"
+              id="home-auth-signup"
+            >
+              Create account
+            </button>
+          </div>
+        </div>
+
+        <div class="profile-signed-row" id="home-signed-row" hidden>
+          <span class="profile-signed-email" id="home-signed-email"></span>
+          <button type="button" class="profile-signout-btn" id="home-auth-signout">
+            Sign out
+          </button>
+        </div>
+
+        <footer class="choose-timer-footer profile-footer">
+          <a class="choose-timer-leaf-link" href="my-garden.html">
+            <img
+              class="choose-timer-leaf"
+              src="assets/leaf logo 1.png"
+              alt="Go to my garden"
+              width="48"
+              height="50"
+            />
+          </a>
+        </footer>
+      </div>
+    </main>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+    <script src="plantivity-rtdb.js"></script>
+    <script src="plantivity-firebase-config.js"></script>
+    <script src="plantivity-social.js"></script>
     <script>
       (function () {
-        var host = document.getElementById("garden-tulips");
-        if (!host) return;
-        host.innerHTML = "";
+        var PS = window.PlantivitySocial;
+        if (!PS) return;
 
-        var metaByKey = [
-          {
-            gardenKey: "plantivityGardenTulips",
-            flower: "tulip",
-            imgSrc: "assets/tulip 1.png",
-            viewHrefBase: "view tulip.html?id=",
-          },
-          {
-            gardenKey: "plantivityGardenDaisies",
-            flower: "daisy",
-            imgSrc: "assets/daisy 1.png",
-            viewHrefBase: "view daisy.html?id=",
-          },
-          {
-            gardenKey: "plantivityGardenIrises",
-            flower: "iris",
-            imgSrc: "assets/iris 1.png",
-            viewHrefBase: "view iris.html?id=",
-          },
-          {
-            gardenKey: "plantivityGardenConeflowers",
-            flower: "coneflower",
-            imgSrc: "assets/coneflower 1.png",
-            viewHrefBase: "view coneflower.html?id=",
-          },
-        ];
+        var authSection = document.getElementById("home-auth-section");
+        var signedRow = document.getElementById("home-signed-row");
+        var signedEmailEl = document.getElementById("home-signed-email");
 
-        var items = [];
+        var authEmail = document.getElementById("home-auth-email");
+        var authPass = document.getElementById("home-auth-password");
+        var authError = document.getElementById("home-auth-error");
+        var btnSignin = document.getElementById("home-auth-signin");
+        var btnSignup = document.getElementById("home-auth-signup");
+        var btnSignout = document.getElementById("home-auth-signout");
 
-        function readList(gardenKey) {
-          var listRaw = localStorage.getItem(gardenKey);
-          if (!listRaw) return [];
-          try {
-            var parsed = JSON.parse(listRaw);
-            return Array.isArray(parsed) ? parsed : [];
-          } catch (err) {
-            return [];
+        function setAuthError(msg) {
+          if (authError) authError.textContent = msg || "";
+        }
+
+        function applyAuthUi(user) {
+          var sdk = PS.useFirebaseSdk();
+          if (!sdk) {
+            if (authSection) authSection.hidden = true;
+            if (signedRow) signedRow.hidden = true;
+            return;
+          }
+          if (user) {
+            if (authSection) authSection.hidden = true;
+            if (signedRow) signedRow.hidden = false;
+            if (signedEmailEl) signedEmailEl.textContent = user.email || "Signed in";
+          } else {
+            if (authSection) authSection.hidden = false;
+            if (signedRow) signedRow.hidden = true;
           }
         }
 
-        for (var i = 0; i < metaByKey.length; i += 1) {
-          var meta = metaByKey[i];
-          var list = readList(meta.gardenKey);
-
-          for (var j = 0; j < list.length; j += 1) {
-            var item = list[j];
-            if (!item || !item.id) continue;
-            items.push({ meta: meta, item: item });
+        PS.onAuthStateChanged(function (user) {
+          applyAuthUi(user);
+          if (user && PS.useFirebaseSdk()) {
+            PS.syncMyGardenToCloud().catch(function () {});
           }
-        }
-
-        if (items.length < 1) return;
-
-        items.sort(function (a, b) {
-          var at = a.item.createdAt || 0;
-          var bt = b.item.createdAt || 0;
-          if (at !== bt) return at - bt;
-          return String(a.item.id || "").localeCompare(String(b.item.id || ""));
         });
 
-        for (var k = 0; k < items.length; k += 1) {
-          var entry = items[k];
-          var meta = entry.meta;
-          var item = entry.item;
-
-          var cell = document.createElement("div");
-          cell.className = "index-garden-cell";
-
-          var link = document.createElement("a");
-          link.className = "index-garden-tulip-link";
-          link.href = meta.viewHrefBase + encodeURIComponent(item.id);
-          link.setAttribute(
-            "aria-label",
-            "View timer: " + (item.title ? item.title : meta.flower)
-          );
-
-          var img = document.createElement("img");
-          img.src = meta.imgSrc;
-          img.alt = "";
-          img.className = "index-garden-tulip";
-
-          link.appendChild(img);
-          cell.appendChild(link);
-          host.appendChild(cell);
+        if (btnSignin) {
+          btnSignin.addEventListener("click", function () {
+            setAuthError("");
+            PS.signInWithEmailPassword(authEmail.value, authPass.value)
+              .then(function () {
+                window.location.href = "my-garden.html";
+              })
+              .catch(function (err) {
+                setAuthError(err && err.message ? err.message : "Sign-in failed.");
+              });
+          });
+        }
+        if (btnSignup) {
+          btnSignup.addEventListener("click", function () {
+            setAuthError("");
+            PS.signUpWithEmailPassword(authEmail.value, authPass.value)
+              .then(function () {
+                window.location.href = "my-garden.html";
+              })
+              .catch(function (err) {
+                setAuthError(err && err.message ? err.message : "Could not create account.");
+              });
+          });
+        }
+        if (btnSignout) {
+          btnSignout.addEventListener("click", function () {
+            PS.signOutFirebase();
+          });
         }
       })();
     </script>

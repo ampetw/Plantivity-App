@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Community — Plantivity</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="choose-timer-body community-body">
+    <main class="choose-timer-main community-main" aria-label="Community profiles">
+      <img
+        class="choose-timer-bg"
+        src="assets/background color 5.png"
+        alt=""
+      />
+      <div class="community-stack">
+        <header class="community-banner">
+          <img
+            class="community-header-img"
+            src="assets/my profile header.png"
+            alt="Community"
+          />
+        </header>
+
+        <div class="community-mid">
+          <p class="community-status" id="community-status" aria-live="polite"></p>
+          <div class="community-grid" id="community-grid"></div>
+        </div>
+
+        <footer class="choose-timer-footer community-footer">
+          <a class="choose-timer-leaf-link" href="my-garden.html">
+            <img
+              class="choose-timer-leaf"
+              src="assets/leaf logo 1.png"
+              alt="Back to garden"
+              width="48"
+              height="50"
+            />
+          </a>
+        </footer>
+      </div>
+    </main>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+    <script src="plantivity-rtdb.js"></script>
+    <script src="plantivity-firebase-config.js"></script>
+    <script src="plantivity-social.js"></script>
+    <script>
+      (function () {
+        var PS = window.PlantivitySocial;
+        var grid = document.getElementById("community-grid");
+        var statusEl = document.getElementById("community-status");
+        if (!PS || !grid) return;
+
+        function card(profile) {
+          var link = document.createElement("a");
+          link.className = "community-card-link";
+          link.href =
+            "my-garden.html?user=" + encodeURIComponent(profile.deviceId);
+          link.setAttribute(
+            "aria-label",
+            "View garden for " + profile.username
+          );
+
+          var article = document.createElement("article");
+          article.className = "community-card community-card--pack";
+
+          var frame = document.createElement("span");
+          frame.className = "community-card-pack-frame";
+
+          var packBg = document.createElement("img");
+          packBg.className = "community-card-pack-bg";
+          packBg.src = "assets/pack.png";
+          packBg.alt = "";
+
+          var face = document.createElement("span");
+          face.className = "community-card-pack-face";
+
+          var nameEl = document.createElement("span");
+          nameEl.className = "community-card-pack-user";
+          nameEl.textContent = profile.username;
+
+          var wrap = document.createElement("span");
+          wrap.className = "community-card-pack-flower-wrap";
+
+          var flImg = document.createElement("img");
+          flImg.className = "community-card-pack-flower";
+          flImg.src = profile.flowerImg;
+          flImg.alt = "";
+
+          wrap.appendChild(flImg);
+          face.appendChild(nameEl);
+          face.appendChild(wrap);
+          frame.appendChild(packBg);
+          frame.appendChild(face);
+          article.appendChild(frame);
+          link.appendChild(article);
+          return link;
+        }
+
+        function runLoad() {
+          var mine = PS.getMyProfileKey();
+          statusEl.textContent = "Loading…";
+
+          if (PS.useFirebaseSdk() && !PS.getAuthUid()) {
+            statusEl.innerHTML =
+              "Sign in on <a class=\"community-inline-link\" href=\"index.html\">Home</a> with your email to view the community.";
+            grid.innerHTML = "";
+            return;
+          }
+
+          if (!PS.getRtdbRoot()) {
+            statusEl.textContent =
+              "Add your Firebase web config in plantivity-firebase-config.js (or set PLANTIVITY_RTDB_URL in plantivity-rtdb.js).";
+            return;
+          }
+
+          PS.loadCommunityProfiles()
+            .then(function (list) {
+              statusEl.textContent = "";
+              grid.innerHTML = "";
+              var others = list.filter(function (p) {
+                return p.deviceId !== mine;
+              });
+              if (others.length < 1) {
+                statusEl.textContent =
+                  "No other gardeners yet. Ask friends to create an account and set a username on Profile.";
+                return;
+              }
+              for (var i = 0; i < others.length; i += 1) {
+                grid.appendChild(card(others[i]));
+              }
+            })
+            .catch(function (err) {
+              if (err && err.message === "auth_required") {
+                statusEl.innerHTML =
+                  "Sign in on <a class=\"community-inline-link\" href=\"index.html\">Home</a> to view the community.";
+                return;
+              }
+              statusEl.textContent =
+                "Could not load community. Check plantivity-firebase-config.js, Authentication, and Realtime Database rules.";
+            });
+        }
+
+        PS.onAuthStateChanged(function () {
+          runLoad();
+        });
+      })();
+    </script>
+  </body>
+</html>
