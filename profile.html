@@ -11,20 +11,7 @@
   </head>
   <body class="choose-timer-body profile-body">
     <main class="choose-timer-main profile-main" aria-label="My profile">
-      <img
-        class="choose-timer-bg"
-        src="assets/background color 5.png"
-        alt=""
-      />
       <div class="profile-stack">
-        <header class="profile-banner">
-          <img
-            class="profile-header-img"
-            src="assets/community header.png"
-            alt="My Profile"
-          />
-        </header>
-
         <div class="profile-auth-section" id="profile-auth-section" hidden>
           <p class="profile-auth-intro">Sign in with your email to save your profile and appear in Community.</p>
           <label class="visually-hidden" for="profile-auth-email">Email</label>
@@ -44,6 +31,9 @@
             placeholder="Password"
           />
           <p class="profile-auth-error" id="profile-auth-error" role="alert"></p>
+          <p class="profile-auth-forgot-wrap">
+            <a class="profile-auth-forgot" href="forgot-password.html">Forgot password?</a>
+          </p>
           <div class="profile-auth-actions">
             <button type="button" class="profile-auth-btn" id="profile-auth-signin">Sign in</button>
             <button type="button" class="profile-auth-btn profile-auth-btn--secondary" id="profile-auth-signup">

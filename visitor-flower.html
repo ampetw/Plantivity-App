@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Flower — Plantivity</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="choose-timer-body">
+    <main class="choose-timer-main view-tulip-main" aria-label="Flower details">
+      <img
+        class="choose-timer-bg"
+        src="assets/background color 5.png"
+        alt=""
+      />
+
+      <div class="view-timer-stack">
+        <div class="view-timer-meta-box view-timer-meta-outer" aria-label="Timer details">
+          <div
+            id="view-timer-meta-date"
+            class="view-timer-meta-line"
+            aria-label="Date timer happened"
+          ></div>
+        </div>
+
+        <div class="view-timer-flower-stage">
+          <img
+            class="view-timer-flower-hero"
+            id="visitor-flower-hero"
+            src=""
+            alt=""
+          />
+        </div>
+
+        <div class="view-timer-artboard">
+          <img
+            class="view-timer-pack-img"
+            src="assets/pack.png"
+            alt=""
+            aria-hidden="true"
+          />
+
+          <div class="view-timer-face">
+            <div class="view-timer-title-wrap">
+              <div
+                id="view-timer-title"
+                class="view-timer-title"
+                aria-label="Timer Title"
+              ></div>
+            </div>
+
+            <div class="view-timer-body-wrap">
+              <div
+                id="view-timer-description"
+                class="view-timer-description"
+                aria-label="Description"
+              ></div>
+            </div>
+          </div>
+        </div>
+
+        <footer class="choose-timer-footer view-timer-footer view-timer-footer--readonly">
+          <a class="choose-timer-leaf-link" href="community.html">
+            <img
+              class="choose-timer-leaf"
+              src="assets/leaf logo 1.png"
+              alt="Back to community"
+              width="48"
+              height="50"
+            />
+          </a>
+        </footer>
+      </div>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+    <script src="plantivity-rtdb.js"></script>
+    <script src="plantivity-firebase-config.js"></script>
+    <script src="plantivity-social.js"></script>
+    <script>
+      (function () {
+        var PS = window.PlantivitySocial;
+        var params = new URLSearchParams(window.location.search);
+        var ownerUid = params.get("user");
+        var flower = String(params.get("flower") || "").toLowerCase();
+        var id = params.get("id");
+
+        var titleEl = document.getElementById("view-timer-title");
+        var descEl = document.getElementById("view-timer-description");
+        var metaDateEl = document.getElementById("view-timer-meta-date");
+        var heroEl = document.getElementById("visitor-flower-hero");
+
+        var GARDEN_KEY_BY_FLOWER = {
+          tulip: "plantivityGardenTulips",
+          daisy: "plantivityGardenDaisies",
+          iris: "plantivityGardenIrises",
+          coneflower: "plantivityGardenConeflowers",
+        };
+
+        var HERO_BY_FLOWER = {
+          tulip: "assets/tulip 1.png",
+          daisy: "assets/daisy 1.png",
+          iris: "assets/iris 1.png",
+          coneflower: "assets/coneflower 1.png",
+        };
+
+        if (!PS || !ownerUid || !id || !titleEl || !descEl || !GARDEN_KEY_BY_FLOWER[flower]) {
+          window.location.replace("community.html");
+          return;
+        }
+
+        if (heroEl) {
+          heroEl.src = HERO_BY_FLOWER[flower] || HERO_BY_FLOWER.tulip;
+        }
+
+        function pad2(n) {
+          return String(n).padStart(2, "0");
+        }
+
+        function formatDate(createdAt) {
+          var d = new Date(createdAt);
+          if (!d || isNaN(d.getTime())) return "";
+          var mm = pad2(d.getMonth() + 1);
+          var dd = pad2(d.getDate());
+          var yyyy = d.getFullYear();
+          return mm + "/" + dd + "/" + yyyy;
+        }
+
+        function show(item) {
+          if (!item) {
+            titleEl.textContent = "Flower not found";
+            descEl.textContent = "";
+            if (metaDateEl) metaDateEl.textContent = "";
+            return;
+          }
+          titleEl.textContent = item.title || "";
+          descEl.textContent = item.description || "";
+          if (metaDateEl) {
+            metaDateEl.textContent = item.createdAt ? formatDate(item.createdAt) : "";
+          }
+        }
+
+        function load() {
+          descEl.textContent = "";
+          if (!PS.useFirebaseSdk() || !PS.getAuthUid()) {
+            show(null);
+            titleEl.textContent = "Sign in required";
+            descEl.textContent = "";
+            var hint = document.createElement("p");
+            hint.className = "visitor-flower-hint";
+            var a = document.createElement("a");
+            a.className = "community-inline-link";
+            a.href = "profile.html";
+            a.textContent = "Open My Profile";
+            hint.appendChild(a);
+            hint.appendChild(document.createTextNode(" to sign in, then try again."));
+            descEl.appendChild(hint);
+            return;
+          }
+          PS.loadUserGarden(ownerUid)
+            .then(function (garden) {
+              var gk = GARDEN_KEY_BY_FLOWER[flower];
+              var list = PS.readListFromGardenObject(garden, gk);
+              var item = null;
+              for (var i = 0; i < list.length; i += 1) {
+                if (list[i] && list[i].id === id) {
+                  item = list[i];
+                  break;
+                }
+              }
+              show(item);
+            })
+            .catch(function () {
+              show(null);
+              titleEl.textContent = "Could not load";
+              descEl.textContent = "Check your connection and try again.";
+            });
+        }
+
+        PS.onAuthStateChanged(function () {
+          load();
+        });
+      })();
+    </script>
+  </body>
+</html>

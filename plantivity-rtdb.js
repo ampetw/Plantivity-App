@@ -13,6 +13,12 @@
  *         "$uid": {
  *           ".write": "auth != null && auth.uid == $uid"
  *         }
+ *       },
+ *       "gardens": {
+ *         "$uid": {
+ *           ".read": "auth != null",
+ *           ".write": "auth != null && auth.uid == $uid"
+ *         }
  *       }
  *     }
  *   }

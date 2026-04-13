@@ -40,6 +40,12 @@
         </a>
       </div>
     </main>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+    <script src="plantivity-rtdb.js"></script>
+    <script src="plantivity-firebase-config.js"></script>
+    <script src="plantivity-social.js"></script>
     <script>
       (function () {
         var link = document.getElementById("congrats-continue");
@@ -84,7 +90,15 @@
           localStorage.setItem(gardenKey, JSON.stringify(coneflowers));
           localStorage.removeItem(pendingRewardIdKey);
           localStorage.removeItem(pendingObjKey);
-          window.location.href = "index.html";
+          function goHome() {
+            window.location.href = "index.html";
+          }
+          var PS = window.PlantivitySocial;
+          if (PS && typeof PS.syncMyGardenToCloud === "function") {
+            PS.syncMyGardenToCloud().finally(goHome);
+          } else {
+            goHome();
+          }
         });
       })();
     </script>

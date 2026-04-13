@@ -77,6 +77,104 @@
     return Array.isArray(parsed) ? parsed : [];
   }
 
+  var GARDEN_REMOTE_KEYS = {
+    plantivityGardenTulips: "tulips",
+    plantivityGardenDaisies: "daisies",
+    plantivityGardenIrises: "irises",
+    plantivityGardenConeflowers: "coneflowers",
+  };
+
+  function buildGardenCloudPayload() {
+    var out = {
+      tulips: readGardenList("plantivityGardenTulips"),
+      daisies: readGardenList("plantivityGardenDaisies"),
+      irises: readGardenList("plantivityGardenIrises"),
+      coneflowers: readGardenList("plantivityGardenConeflowers"),
+      updatedAt: Date.now(),
+    };
+    return out;
+  }
+
+  function normalizeGardenFromRemote(val) {
+    if (!val || typeof val !== "object") {
+      return {
+        tulips: [],
+        daisies: [],
+        irises: [],
+        coneflowers: [],
+        updatedAt: 0,
+      };
+    }
+    function pickArr(key) {
+      var a = val[key];
+      return Array.isArray(a) ? a : [];
+    }
+    return {
+      tulips: pickArr("tulips"),
+      daisies: pickArr("daisies"),
+      irises: pickArr("irises"),
+      coneflowers: pickArr("coneflowers"),
+      updatedAt: val.updatedAt || 0,
+    };
+  }
+
+  function readListFromGardenObject(garden, localGardenKey) {
+    var g = normalizeGardenFromRemote(garden);
+    var rk = GARDEN_REMOTE_KEYS[localGardenKey];
+    if (!rk) return [];
+    var a = g[rk];
+    return Array.isArray(a) ? a : [];
+  }
+
+  function syncMyGardenToCloud() {
+    if (!useFirebaseSdk()) return Promise.resolve();
+    var uid = getAuthUid();
+    if (!uid) return Promise.resolve();
+    var payload = buildGardenCloudPayload();
+    return global.firebase
+      .database()
+      .ref("plantivity/gardens/" + uid)
+      .set(payload);
+  }
+
+  function loadUserGarden(uid) {
+    var id = uid != null ? String(uid).trim() : "";
+    if (!id) return Promise.reject(new Error("no_uid"));
+    if (useFirebaseSdk()) {
+      if (!getAuthUid()) return Promise.reject(new Error("auth_required"));
+      return global.firebase
+        .database()
+        .ref("plantivity/gardens/" + id)
+        .once("value")
+        .then(function (snap) {
+          return normalizeGardenFromRemote(snap.val());
+        });
+    }
+    var root = getRtdbRoot();
+    if (!root) return Promise.reject(new Error("no_rtdb"));
+    return global
+      .fetch(rtdbUrl("/plantivity/gardens/" + encodeURIComponent(id)), {
+        cache: "no-store",
+      })
+      .then(function (res) {
+        return res.json().then(function (data) {
+          if (!res.ok) {
+            var err = new Error("garden_http");
+            err.data = data;
+            throw err;
+          }
+          return normalizeGardenFromRemote(data);
+        });
+      });
+  }
+
+  function sendPasswordResetEmail(email) {
+    if (!useFirebaseSdk()) {
+      return Promise.reject(new Error("firebase_not_configured"));
+    }
+    return global.firebase.auth().sendPasswordResetEmail(String(email).trim());
+  }
+
   function itemDurationMs(entry, flowerFallback) {
     if (!entry || typeof entry !== "object") return 0;
     var n = parseInt(entry.durationMs, 10);
@@ -344,5 +442,9 @@
     signUpWithEmailPassword: signUpWithEmailPassword,
     signOutFirebase: signOutFirebase,
     onAuthStateChanged: onAuthStateChanged,
+    syncMyGardenToCloud: syncMyGardenToCloud,
+    loadUserGarden: loadUserGarden,
+    readListFromGardenObject: readListFromGardenObject,
+    sendPasswordResetEmail: sendPasswordResetEmail,
   };
 })(window);

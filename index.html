@@ -12,7 +12,7 @@
   <body class="index-body">
     <div class="index-scroll">
       <main class="index-main" aria-label="Plantivity home screen">
-        <div class="index-top-bar">
+        <div class="index-top-bar" id="index-top-bar-default">
           <a class="index-top-icon-link" href="profile.html" aria-label="My profile">
             <img src="assets/profile.png" alt="" width="40" height="40" />
           </a>
@@ -35,20 +35,40 @@
             aria-label="Flowers you have earned"
           ></div>
         </div>
-        <a class="index-new-timer-link" href="choose timer.html">
+        <a class="index-new-timer-link" id="index-new-timer-link" href="choose timer.html">
           <img
             class="index-new-timer-img"
             src="assets/new timer button.png"
             alt="New Timer"
           />
         </a>
+        <footer class="index-visitor-footer" id="index-visitor-footer" hidden>
+          <a class="choose-timer-leaf-link" href="community.html" aria-label="Back to community">
+            <img
+              class="choose-timer-leaf"
+              src="assets/leaf logo 1.png"
+              alt=""
+              width="48"
+              height="50"
+            />
+          </a>
+        </footer>
       </main>
     </div>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+    <script src="plantivity-rtdb.js"></script>
+    <script src="plantivity-firebase-config.js"></script>
+    <script src="plantivity-social.js"></script>
     <script>
       (function () {
         var host = document.getElementById("garden-tulips");
         if (!host) return;
-        host.innerHTML = "";
+
+        var params = new URLSearchParams(window.location.search);
+        var visitorUid = params.get("user");
+        var PS = window.PlantivitySocial;
 
         var metaByKey = [
           {
@@ -77,9 +97,7 @@
           },
         ];
 
-        var items = [];
-
-        function readList(gardenKey) {
+        function readListLocal(gardenKey) {
           var listRaw = localStorage.getItem(gardenKey);
           if (!listRaw) return [];
           try {
@@ -90,50 +108,169 @@
           }
         }
 
-        for (var i = 0; i < metaByKey.length; i += 1) {
-          var meta = metaByKey[i];
-          var list = readList(meta.gardenKey);
+        function collectItemsFromLocal() {
+          var items = [];
+          for (var i = 0; i < metaByKey.length; i += 1) {
+            var meta = metaByKey[i];
+            var list = readListLocal(meta.gardenKey);
+            for (var j = 0; j < list.length; j += 1) {
+              var item = list[j];
+              if (!item || !item.id) continue;
+              items.push({ meta: meta, item: item });
+            }
+          }
+          return items;
+        }
 
-          for (var j = 0; j < list.length; j += 1) {
-            var item = list[j];
-            if (!item || !item.id) continue;
-            items.push({ meta: meta, item: item });
+        function collectItemsFromGarden(garden) {
+          var items = [];
+          if (!PS || typeof PS.readListFromGardenObject !== "function") return items;
+          for (var i = 0; i < metaByKey.length; i += 1) {
+            var meta = metaByKey[i];
+            var list = PS.readListFromGardenObject(garden, meta.gardenKey);
+            for (var j = 0; j < list.length; j += 1) {
+              var item = list[j];
+              if (!item || !item.id) continue;
+              items.push({ meta: meta, item: item });
+            }
+          }
+          return items;
+        }
+
+        function sortItems(items) {
+          items.sort(function (a, b) {
+            var at = a.item.createdAt || 0;
+            var bt = b.item.createdAt || 0;
+            if (at !== bt) return at - bt;
+            return String(a.item.id || "").localeCompare(String(b.item.id || ""));
+          });
+        }
+
+        function renderGarden(items, ownerUid) {
+          host.innerHTML = "";
+          if (items.length < 1) {
+            if (ownerUid) {
+              var empty = document.createElement("p");
+              empty.className = "index-visitor-empty";
+              empty.textContent = "This garden has no flowers yet.";
+              host.appendChild(empty);
+            }
+            return;
+          }
+          sortItems(items);
+          for (var k = 0; k < items.length; k += 1) {
+            var entry = items[k];
+            var meta = entry.meta;
+            var item = entry.item;
+
+            var cell = document.createElement("div");
+            cell.className = "index-garden-cell";
+
+            var link = document.createElement("a");
+            link.className = "index-garden-tulip-link";
+            if (ownerUid) {
+              link.href =
+                "visitor-flower.html?user=" +
+                encodeURIComponent(ownerUid) +
+                "&flower=" +
+                encodeURIComponent(meta.flower) +
+                "&id=" +
+                encodeURIComponent(item.id);
+            } else {
+              link.href = meta.viewHrefBase + encodeURIComponent(item.id);
+            }
+            link.setAttribute(
+              "aria-label",
+              "View timer: " + (item.title ? item.title : meta.flower)
+            );
+
+            var img = document.createElement("img");
+            img.src = meta.imgSrc;
+            img.alt = "";
+            img.className = "index-garden-tulip";
+
+            link.appendChild(img);
+            cell.appendChild(link);
+            host.appendChild(cell);
           }
         }
 
-        if (items.length < 1) return;
+        function applyVisitorChrome() {
+          document.body.classList.add("index-body--visitor");
+          var def = document.getElementById("index-top-bar-default");
+          var nt = document.getElementById("index-new-timer-link");
+          var foot = document.getElementById("index-visitor-footer");
+          if (def) def.hidden = true;
+          if (nt) nt.hidden = true;
+          if (foot) foot.hidden = false;
+        }
 
-        items.sort(function (a, b) {
-          var at = a.item.createdAt || 0;
-          var bt = b.item.createdAt || 0;
-          if (at !== bt) return at - bt;
-          return String(a.item.id || "").localeCompare(String(b.item.id || ""));
-        });
+        function runOwnGarden() {
+          document.body.classList.remove("index-body--visitor");
+          var def = document.getElementById("index-top-bar-default");
+          var nt = document.getElementById("index-new-timer-link");
+          var foot = document.getElementById("index-visitor-footer");
+          if (def) def.hidden = false;
+          if (nt) nt.hidden = false;
+          if (foot) foot.hidden = true;
 
-        for (var k = 0; k < items.length; k += 1) {
-          var entry = items[k];
-          var meta = entry.meta;
-          var item = entry.item;
+          var items = collectItemsFromLocal();
+          if (items.length < 1) {
+            host.innerHTML = "";
+          } else {
+            renderGarden(items, null);
+          }
+          if (PS && typeof PS.syncMyGardenToCloud === "function") {
+            PS.syncMyGardenToCloud().catch(function () {});
+          }
+        }
 
-          var cell = document.createElement("div");
-          cell.className = "index-garden-cell";
+        function runVisitor(uid) {
+          applyVisitorChrome();
+          if (!PS || typeof PS.loadUserGarden !== "function") {
+            host.innerHTML =
+              "<p class=\"index-visitor-empty\">Could not load gardens. Check Firebase configuration.</p>";
+            return;
+          }
+          function go(user) {
+            if (!user) {
+              host.innerHTML = "";
+              var w = document.createElement("p");
+              w.className = "index-visitor-empty";
+              var t = document.createTextNode("Sign in to view another gardener’s garden. ");
+              var a = document.createElement("a");
+              a.className = "index-inline-link";
+              a.href = "profile.html";
+              a.textContent = "My Profile";
+              w.appendChild(t);
+              w.appendChild(a);
+              w.appendChild(document.createTextNode("."));
+              host.appendChild(w);
+              return;
+            }
+            PS.loadUserGarden(uid)
+              .then(function (garden) {
+                var items = collectItemsFromGarden(garden);
+                renderGarden(items, uid);
+              })
+              .catch(function () {
+                host.innerHTML =
+                  "<p class=\"index-visitor-empty\">Could not load this garden.</p>";
+              });
+          }
+          if (PS.useFirebaseSdk()) {
+            PS.onAuthStateChanged(function (u) {
+              go(u);
+            });
+          } else {
+            go(null);
+          }
+        }
 
-          var link = document.createElement("a");
-          link.className = "index-garden-tulip-link";
-          link.href = meta.viewHrefBase + encodeURIComponent(item.id);
-          link.setAttribute(
-            "aria-label",
-            "View timer: " + (item.title ? item.title : meta.flower)
-          );
-
-          var img = document.createElement("img");
-          img.src = meta.imgSrc;
-          img.alt = "";
-          img.className = "index-garden-tulip";
-
-          link.appendChild(img);
-          cell.appendChild(link);
-          host.appendChild(cell);
+        if (visitorUid) {
+          runVisitor(String(visitorUid).trim());
+        } else {
+          runOwnGarden();
         }
       })();
     </script>

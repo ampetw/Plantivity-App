@@ -1525,7 +1525,18 @@ a.timer-card--link {
   z-index: 1;
 }
 
-.profile-banner,
+/* Profile: full-bleed bg on the scroll column (covers full content height) */
+.profile-main {
+  background-color: #0b4d0f;
+}
+
+.profile-stack {
+  background-image: url("assets/background color 5.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
 .community-banner {
   box-sizing: border-box;
   flex-shrink: 0;
@@ -1534,7 +1545,6 @@ a.timer-card--link {
   width: min(340px, 100%);
 }
 
-.profile-header-img,
 .community-header-img {
   display: block;
   filter: drop-shadow(-4px 5px 0 rgba(0, 0, 0, 0.22));
@@ -1652,9 +1662,10 @@ a.timer-card--link {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
-  justify-content: space-evenly;
+  gap: clamp(10px, 2.5vmin, 18px);
+  justify-content: flex-start;
   min-height: 0;
-  padding: 10px 0 6px;
+  padding: 12px 0 calc(20px + env(safe-area-inset-bottom, 0px));
   width: 100%;
 }
 
@@ -1756,11 +1767,12 @@ a.timer-card--link {
 .profile-pack-frame {
   display: block;
   filter: drop-shadow(-3px 4px 0 rgba(0, 0, 0, 0.2));
-  height: min(280px, 56vmin);
+  flex-shrink: 0;
+  height: min(220px, min(48vmin, calc(50dvh - 168px)));
   position: relative;
   transform: translateZ(0);
   transition: transform 140ms ease, filter 140ms ease;
-  width: min(210px, 54vw);
+  width: min(200px, min(50vw, calc((50dvh - 168px) * 0.75)));
 }
 
 .profile-pack-btn:hover .profile-pack-frame {
@@ -1847,9 +1859,14 @@ a.timer-card--link {
 
 .profile-footer,
 .community-footer {
+  flex-shrink: 0;
   margin-top: auto;
   padding-bottom: 4px;
   padding-top: 8px;
+}
+
+.profile-footer {
+  padding-top: calc(12px + env(safe-area-inset-bottom, 0px) * 0.35);
 }
 
 .profile-picker {
@@ -1947,6 +1964,14 @@ a.timer-card--link {
   width: min(340px, 100%);
 }
 
+.community-card-link {
+  -webkit-tap-highlight-color: transparent;
+  color: inherit;
+  display: block;
+  min-width: 0;
+  text-decoration: none;
+}
+
 .community-card {
   border: 2px solid #7a5230;
   box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.16);
@@ -1956,32 +1981,201 @@ a.timer-card--link {
   overflow: hidden;
 }
 
-.community-card-user {
-  background: #d9c4a4;
-  color: #0b3d0f;
+.community-card--pack {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.community-card-pack-frame {
+  display: block;
+  filter: drop-shadow(-2px 3px 0 rgba(0, 0, 0, 0.18));
+  height: min(132px, 34vmin);
+  margin: 0 auto;
+  position: relative;
+  width: min(118px, 42vw);
+}
+
+.community-card-pack-bg {
+  display: block;
+  height: 100%;
+  image-rendering: pixelated;
+  object-fit: contain;
+  width: 100%;
+}
+
+.community-card-pack-face {
+  align-items: center;
+  bottom: 11%;
+  display: grid;
+  grid-template-rows: minmax(0, 30%) 1fr;
+  justify-items: center;
+  left: 14%;
+  min-height: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 14%;
+  top: 11%;
+}
+
+.community-card-pack-user {
+  align-self: center;
+  color: #0d3d0d;
   font-family: "Pixelify Sans", sans-serif;
-  font-size: clamp(11px, 2.8vmin, 13px);
+  font-size: clamp(9px, 2.4vmin, 11px);
+  line-height: 1.15;
+  max-width: 100%;
   overflow: hidden;
-  padding: 10px 8px;
+  padding: 0 2px;
+  text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.community-card-body {
+.community-card-pack-flower-wrap {
   align-items: center;
-  background: #efe3cd;
   display: flex;
-  flex: 1;
   justify-content: center;
-  padding: 10px 6px 12px;
+  max-height: 100%;
+  min-height: 0;
+  padding: 0 2% 6%;
+  width: 100%;
 }
 
-.community-card-flower {
+.community-card-pack-flower {
   display: block;
   height: auto;
   image-rendering: pixelated;
-  max-width: 88px;
+  max-height: 100%;
+  max-width: 78%;
+  object-fit: contain;
+  width: auto;
+}
+
+.community-card-link:hover .community-card-pack-frame,
+.community-card-link:focus-visible .community-card-pack-frame {
+  filter: drop-shadow(-2px 3px 0 rgba(0, 0, 0, 0.28));
+  transform: scale(1.02);
+}
+
+.community-card-link:focus-visible {
+  border-radius: 4px;
+  outline: 3px solid #0a6b12;
+  outline-offset: 3px;
+}
+
+.index-body--visitor .index-new-timer-link[hidden] {
+  display: none !important;
+}
+
+.index-visitor-footer {
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  line-height: 0;
+  position: absolute;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.index-visitor-footer[hidden] {
+  display: none !important;
+}
+
+.index-visitor-footer .choose-timer-leaf-link:focus-visible {
+  border-radius: 2px;
+  outline: 3px solid #0a6b12;
+  outline-offset: 4px;
+}
+
+.index-visitor-empty {
+  color: #1a3818;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: clamp(14px, 3.8vmin, 17px);
+  margin: 24px 16px;
+  max-width: 320px;
+  text-align: center;
+}
+
+.index-inline-link {
+  color: #06400d;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.profile-auth-forgot-wrap {
+  margin: 0;
+  text-align: center;
+}
+
+.profile-auth-forgot {
+  color: #06400d;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: clamp(12px, 3.2vmin, 14px);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.profile-auth-forgot:focus-visible {
+  border-radius: 2px;
+  outline: 3px solid #0a6b12;
+  outline-offset: 2px;
+}
+
+.forgot-password-panel {
+  background: rgba(246, 242, 228, 0.94);
+  border: 2px solid #5a7a42;
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 360px;
+  padding: 20px 18px;
   width: 100%;
+}
+
+.forgot-password-title {
+  color: #08380c;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: clamp(20px, 5vmin, 24px);
+  font-weight: 500;
+  margin: 0;
+  text-align: center;
+}
+
+.forgot-password-intro {
+  color: #0b3d0f;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: clamp(13px, 3.4vmin, 15px);
+  line-height: 1.4;
+  margin: 0;
+  text-align: center;
+}
+
+.forgot-password-success {
+  color: #0b4d0f;
+  font-family: "Pixelify Sans", sans-serif;
+  font-size: clamp(12px, 3.2vmin, 14px);
+  line-height: 1.4;
+  margin: 0;
+  text-align: center;
+}
+
+.forgot-password-back {
+  margin: 0;
+  text-align: center;
+}
+
+.view-timer-footer--readonly .view-timer-delete-link {
+  display: none;
+}
+
+.visitor-flower-hint {
+  line-height: 1.45;
+  margin: 0;
 }
 
 
