@@ -30,6 +30,17 @@
           <div class="community-grid" id="community-grid"></div>
         </div>
 
+        <footer class="choose-timer-footer community-footer">
+          <a class="choose-timer-leaf-link" href="my-garden.html">
+            <img
+              class="choose-timer-leaf"
+              src="assets/leaf logo 1.png"
+              alt="Back to my garden"
+              width="48"
+              height="50"
+            />
+          </a>
+        </footer>
       </div>
     </main>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
@@ -49,7 +60,7 @@
           var link = document.createElement("a");
           link.className = "community-card-link";
           link.href =
-            "my-garden.html?user=" + encodeURIComponent(profile.deviceId);
+            "public garden.html?user=" + encodeURIComponent(profile.deviceId);
           link.setAttribute(
             "aria-label",
             "View garden for " + profile.username

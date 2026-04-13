@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>Garden — Plantivity</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="index-body index-body--visitor">
+    <div class="index-scroll">
+      <main class="index-main" aria-label="Public garden screen">
+        <div class="index-bg-stack" aria-hidden="true">
+          <img
+            class="index-garden-bg"
+            src="assets/garden background.png"
+            alt=""
+          />
+          <div class="index-bg-soil-extension"></div>
+        </div>
+        <div class="index-content-flow">
+          <div
+            class="index-garden-tulips"
+            id="garden-tulips"
+            aria-label="Flowers earned"
+          ></div>
+        </div>
+        <footer class="index-visitor-footer" id="index-visitor-footer">
+          <a class="choose-timer-leaf-link" href="community.html" aria-label="Back to community">
+            <img
+              class="choose-timer-leaf"
+              src="assets/leaf logo 1.png"
+              alt=""
+              width="48"
+              height="50"
+            />
+          </a>
+        </footer>
+      </main>
+    </div>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+    <script src="plantivity-rtdb.js"></script>
+    <script src="plantivity-firebase-config.js"></script>
+    <script src="plantivity-social.js"></script>
+    <script>
+      (function () {
+        var host = document.getElementById("garden-tulips");
+        if (!host) return;
+
+        var params = new URLSearchParams(window.location.search);
+        var visitorUid = params.get("user");
+        if (!visitorUid) {
+          window.location.href = "my-garden.html";
+          return;
+        }
+        visitorUid = String(visitorUid).trim();
+        if (!visitorUid) {
+          window.location.href = "my-garden.html";
+          return;
+        }
+
+        var PS = window.PlantivitySocial;
+
+        var metaByKey = [
+          {
+            gardenKey: "plantivityGardenTulips",
+            flower: "tulip",
+            imgSrc: "assets/tulip 1.png",
+          },
+          {
+            gardenKey: "plantivityGardenDaisies",
+            flower: "daisy",
+            imgSrc: "assets/daisy 1.png",
+          },
+          {
+            gardenKey: "plantivityGardenIrises",
+            flower: "iris",
+            imgSrc: "assets/iris 1.png",
+          },
+          {
+            gardenKey: "plantivityGardenConeflowers",
+            flower: "coneflower",
+            imgSrc: "assets/coneflower 1.png",
+          },
+        ];
+
+        function collectItemsFromGarden(garden) {
+          var items = [];
+          if (!PS || typeof PS.readListFromGardenObject !== "function") return items;
+          for (var i = 0; i < metaByKey.length; i += 1) {
+            var meta = metaByKey[i];
+            var list = PS.readListFromGardenObject(garden, meta.gardenKey);
+            for (var j = 0; j < list.length; j += 1) {
+              var item = list[j];
+              if (!item || !item.id) continue;
+              items.push({ meta: meta, item: item });
+            }
+          }
+          return items;
+        }
+
+        function sortItems(items) {
+          items.sort(function (a, b) {
+            var at = a.item.createdAt || 0;
+            var bt = b.item.createdAt || 0;
+            if (at !== bt) return at - bt;
+            return String(a.item.id || "").localeCompare(String(b.item.id || ""));
+          });
+        }
+
+        function renderGarden(items, ownerUid) {
+          host.innerHTML = "";
+          if (items.length < 1) {
+            var empty = document.createElement("p");
+            empty.className = "index-visitor-empty";
+            empty.textContent = "No flowers to show yet.";
+            host.appendChild(empty);
+            return;
+          }
+          sortItems(items);
+          for (var k = 0; k < items.length; k += 1) {
+            var entry = items[k];
+            var meta = entry.meta;
+            var item = entry.item;
+
+            var cell = document.createElement("div");
+            cell.className = "index-garden-cell";
+
+            var link = document.createElement("a");
+            link.className = "index-garden-tulip-link";
+            link.href =
+              "visitor-flower.html?user=" +
+              encodeURIComponent(ownerUid) +
+              "&flower=" +
+              encodeURIComponent(meta.flower) +
+              "&id=" +
+              encodeURIComponent(item.id);
+            link.setAttribute(
+              "aria-label",
+              "View timer: " + (item.title ? item.title : meta.flower)
+            );
+
+            var img = document.createElement("img");
+            img.src = meta.imgSrc;
+            img.alt = "";
+            img.className = "index-garden-tulip";
+
+            link.appendChild(img);
+            cell.appendChild(link);
+            host.appendChild(cell);
+          }
+        }
+
+        function runVisitor(uid) {
+          if (!PS || typeof PS.loadUserGarden !== "function") {
+            host.innerHTML =
+              "<p class=\"index-visitor-empty\">Could not load gardens. Check Firebase configuration.</p>";
+            return;
+          }
+          var visitLoadId = 0;
+          function go(user) {
+            visitLoadId += 1;
+            var loadId = visitLoadId;
+            if (!user) {
+              host.innerHTML = "";
+              var w = document.createElement("p");
+              w.className = "index-visitor-empty";
+              var t = document.createTextNode("Sign in to view another gardener’s garden. ");
+              var a = document.createElement("a");
+              a.className = "index-inline-link";
+              a.href = "index.html";
+              a.textContent = "Sign in";
+              w.appendChild(t);
+              w.appendChild(a);
+              w.appendChild(document.createTextNode("."));
+              host.appendChild(w);
+              return;
+            }
+            PS.loadUserGarden(uid)
+              .then(function (garden) {
+                if (loadId !== visitLoadId) return;
+                var items = collectItemsFromGarden(garden);
+                renderGarden(items, uid);
+              })
+              .catch(function () {
+                if (loadId !== visitLoadId) return;
+                host.innerHTML =
+                  "<p class=\"index-visitor-empty\">Could not load this garden.</p>";
+              });
+          }
+
+          if (PS.useFirebaseSdk()) {
+            var auth = firebase.auth();
+            if (typeof auth.authStateReady === "function") {
+              auth.authStateReady().then(function () {
+                auth.onAuthStateChanged(go);
+              });
+            } else {
+              PS.onAuthStateChanged(go);
+            }
+          } else {
+            go(null);
+          }
+        }
+
+        runVisitor(visitorUid);
+      })();
+    </script>
+  </body>
+</html>
+
