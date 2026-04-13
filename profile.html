@@ -12,40 +12,7 @@
   <body class="choose-timer-body profile-body">
     <main class="choose-timer-main profile-main" aria-label="My profile">
       <div class="profile-stack">
-        <div class="profile-auth-section" id="profile-auth-section" hidden>
-          <p class="profile-auth-intro">Sign in with your email to save your profile and appear in Community.</p>
-          <label class="visually-hidden" for="profile-auth-email">Email</label>
-          <input
-            id="profile-auth-email"
-            class="profile-auth-input"
-            type="email"
-            autocomplete="username"
-            placeholder="Email"
-          />
-          <label class="visually-hidden" for="profile-auth-password">Password</label>
-          <input
-            id="profile-auth-password"
-            class="profile-auth-input"
-            type="password"
-            autocomplete="current-password"
-            placeholder="Password"
-          />
-          <p class="profile-auth-error" id="profile-auth-error" role="alert"></p>
-          <p class="profile-auth-forgot-wrap">
-            <a class="profile-auth-forgot" href="forgot-password.html">Forgot password?</a>
-          </p>
-          <div class="profile-auth-actions">
-            <button type="button" class="profile-auth-btn" id="profile-auth-signin">Sign in</button>
-            <button type="button" class="profile-auth-btn profile-auth-btn--secondary" id="profile-auth-signup">
-              Create account
-            </button>
-          </div>
-        </div>
-
-        <div class="profile-signed-row" id="profile-signed-row" hidden>
-          <span class="profile-signed-email" id="profile-signed-email"></span>
-          <button type="button" class="profile-signout-btn" id="profile-auth-signout">Sign out</button>
-        </div>
+        <h1 class="profile-page-title">Profile Page</h1>
 
         <div class="profile-mid" id="profile-editor-wrap">
         <div class="profile-uname-block">
@@ -106,7 +73,7 @@
         </div>
 
         <footer class="choose-timer-footer profile-footer">
-          <a class="choose-timer-leaf-link" href="index.html">
+          <a class="choose-timer-leaf-link" href="my-garden.html">
             <img
               class="choose-timer-leaf"
               src="assets/leaf logo 1.png"
@@ -129,42 +96,9 @@
         var PS = window.PlantivitySocial;
         if (!PS) return;
 
-        var authSection = document.getElementById("profile-auth-section");
-        var signedRow = document.getElementById("profile-signed-row");
         var editorWrap = document.getElementById("profile-editor-wrap");
-        var authEmail = document.getElementById("profile-auth-email");
-        var authPass = document.getElementById("profile-auth-password");
-        var authError = document.getElementById("profile-auth-error");
-        var btnSignin = document.getElementById("profile-auth-signin");
-        var btnSignup = document.getElementById("profile-auth-signup");
-        var btnSignout = document.getElementById("profile-auth-signout");
-        var signedEmailEl = document.getElementById("profile-signed-email");
-
-        function setAuthError(msg) {
-          if (authError) authError.textContent = msg || "";
-        }
-
-        function applyAuthUi(user) {
-          var sdk = PS.useFirebaseSdk();
-          if (!sdk) {
-            if (authSection) authSection.hidden = true;
-            if (signedRow) signedRow.hidden = true;
-            if (editorWrap) editorWrap.hidden = false;
-            return;
-          }
-          if (user) {
-            if (authSection) authSection.hidden = true;
-            if (signedRow) signedRow.hidden = false;
-            if (signedEmailEl) signedEmailEl.textContent = user.email || "Signed in";
-          } else {
-            if (authSection) authSection.hidden = false;
-            if (signedRow) signedRow.hidden = true;
-          }
-          if (editorWrap) editorWrap.hidden = false;
-        }
 
         PS.onAuthStateChanged(function (user) {
-          applyAuthUi(user);
           if (user && PS.useFirebaseSdk()) {
             PS.pullRemoteProfileToLocal().then(function () {
               renderUname();
@@ -185,28 +119,7 @@
               .catch(function () {});
           }
         });
-
-        if (btnSignin) {
-          btnSignin.addEventListener("click", function () {
-            setAuthError("");
-            PS.signInWithEmailPassword(authEmail.value, authPass.value).catch(function (err) {
-              setAuthError(err && err.message ? err.message : "Sign-in failed.");
-            });
-          });
-        }
-        if (btnSignup) {
-          btnSignup.addEventListener("click", function () {
-            setAuthError("");
-            PS.signUpWithEmailPassword(authEmail.value, authPass.value).catch(function (err) {
-              setAuthError(err && err.message ? err.message : "Could not create account.");
-            });
-          });
-        }
-        if (btnSignout) {
-          btnSignout.addEventListener("click", function () {
-            PS.signOutFirebase();
-          });
-        }
+        if (editorWrap) editorWrap.hidden = false;
 
         var labelBtn = document.getElementById("profile-uname-label");
         var viewEl = document.getElementById("profile-uname-view");

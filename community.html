@@ -31,7 +31,7 @@
         </div>
 
         <footer class="choose-timer-footer community-footer">
-          <a class="choose-timer-leaf-link" href="index.html">
+          <a class="choose-timer-leaf-link" href="my-garden.html">
             <img
               class="choose-timer-leaf"
               src="assets/leaf logo 1.png"
@@ -60,7 +60,7 @@
           var link = document.createElement("a");
           link.className = "community-card-link";
           link.href =
-            "index.html?user=" + encodeURIComponent(profile.deviceId);
+            "my-garden.html?user=" + encodeURIComponent(profile.deviceId);
           link.setAttribute(
             "aria-label",
             "View garden for " + profile.username
@@ -108,7 +108,7 @@
 
           if (PS.useFirebaseSdk() && !PS.getAuthUid()) {
             statusEl.innerHTML =
-              "Sign in on <a class=\"community-inline-link\" href=\"profile.html\">My Profile</a> with your email to view the community.";
+              "Sign in on <a class=\"community-inline-link\" href=\"index.html\">Home</a> with your email to view the community.";
             grid.innerHTML = "";
             return;
           }
@@ -138,7 +138,7 @@
             .catch(function (err) {
               if (err && err.message === "auth_required") {
                 statusEl.innerHTML =
-                  "Sign in on <a class=\"community-inline-link\" href=\"profile.html\">My Profile</a> to view the community.";
+                  "Sign in on <a class=\"community-inline-link\" href=\"index.html\">Home</a> to view the community.";
                 return;
               }
               statusEl.textContent =
