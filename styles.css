@@ -1595,6 +1595,7 @@ a.timer-card--link {
   font-family: "Pixelify Sans", sans-serif;
   font-size: clamp(14px, 3.8vmin, 16px);
   padding: 10px 12px;
+  text-align: center;
   width: 100%;
 }
 
