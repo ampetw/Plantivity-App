@@ -63,11 +63,11 @@
         </div>
 
         <footer class="choose-timer-footer view-timer-footer view-timer-footer--readonly">
-          <a class="choose-timer-leaf-link" href="community.html">
+          <a class="choose-timer-leaf-link" id="visitor-back-link" href="public garden.html">
             <img
               class="choose-timer-leaf"
               src="assets/leaf logo 1.png"
-              alt="Back to community"
+              alt="Back to garden"
               width="48"
               height="50"
             />
@@ -89,6 +89,7 @@
         var ownerUid = params.get("user");
         var flower = String(params.get("flower") || "").toLowerCase();
         var id = params.get("id");
+        var backLink = document.getElementById("visitor-back-link");
 
         var titleEl = document.getElementById("view-timer-title");
         var descEl = document.getElementById("view-timer-description");
@@ -108,6 +109,11 @@
           iris: "assets/iris 1.png",
           coneflower: "assets/coneflower 1.png",
         };
+
+        if (backLink && ownerUid) {
+          backLink.href = "public garden.html?user=" + encodeURIComponent(ownerUid);
+          backLink.setAttribute("aria-label", "Back to garden");
+        }
 
         if (!PS || !ownerUid || !id || !titleEl || !descEl || !GARDEN_KEY_BY_FLOWER[flower]) {
           window.location.replace("community.html");
