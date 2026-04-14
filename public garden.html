@@ -15,12 +15,15 @@
         <div class="index-bg-stack" aria-hidden="true">
           <img
             class="index-garden-bg"
-            src="assets/garden background.png"
+            src="new%20background.svg"
             alt=""
           />
           <div class="index-bg-soil-extension"></div>
         </div>
         <div class="index-content-flow">
+          <header class="public-garden-header" aria-label="Garden owner">
+            <h1 class="public-garden-title" id="public-garden-title">Garden</h1>
+          </header>
           <div
             class="index-garden-tulips"
             id="garden-tulips"
@@ -64,6 +67,7 @@
         }
 
         var PS = window.PlantivitySocial;
+        var titleEl = document.getElementById("public-garden-title");
 
         var metaByKey = [
           {
@@ -167,6 +171,7 @@
             var loadId = visitLoadId;
             if (!user) {
               host.innerHTML = "";
+              if (titleEl) titleEl.textContent = "Garden";
               var w = document.createElement("p");
               w.className = "index-visitor-empty";
               var t = document.createTextNode("Sign in to view another gardener’s garden. ");
@@ -180,6 +185,30 @@
               host.appendChild(w);
               return;
             }
+
+            if (titleEl && typeof PS.loadCommunityProfiles === "function") {
+              PS.loadCommunityProfiles()
+                .then(function (profiles) {
+                  if (loadId !== visitLoadId) return;
+                  var match = null;
+                  for (var pi = 0; pi < profiles.length; pi += 1) {
+                    if (profiles[pi] && profiles[pi].deviceId === uid) {
+                      match = profiles[pi];
+                      break;
+                    }
+                  }
+                  if (match && match.username) {
+                    titleEl.textContent = match.username + "’s Garden";
+                  } else {
+                    titleEl.textContent = "Garden";
+                  }
+                })
+                .catch(function () {
+                  if (loadId !== visitLoadId) return;
+                  titleEl.textContent = "Garden";
+                });
+            }
+
             PS.loadUserGarden(uid)
               .then(function (garden) {
                 if (loadId !== visitLoadId) return;

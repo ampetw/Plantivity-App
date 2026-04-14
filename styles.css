@@ -15,6 +15,31 @@ body {
   margin: 0;
 }
 
+/* Index (sign-in) — center auth card vertically */
+.profile-body .profile-stack {
+  justify-content: center;
+}
+
+/* Index (sign-in): nudge signed-in row downward */
+.profile-body .profile-signed-row {
+  margin-top: 18px;
+}
+
+/* Public garden header */
+.public-garden-header {
+  padding-top: calc(28px + env(safe-area-inset-top, 0px));
+  text-align: center;
+}
+
+.public-garden-title {
+  color: #08380c;
+  font-family: "p22-folk-art-block", "Pixelify Sans", sans-serif;
+  font-size: clamp(20px, 5.5vmin, 30px);
+  font-weight: 500;
+  margin: 0 0 10px;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
 .splash-body {
   align-items: center;
   background: #f6f6f6;
