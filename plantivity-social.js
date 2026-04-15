@@ -18,10 +18,10 @@
   };
 
   var FLOWER_IMG = {
-    tulip: "assets/tulip 1.png",
-    daisy: "assets/daisy 1.png",
-    iris: "assets/iris 1.png",
-    coneflower: "assets/coneflower 1.png",
+    tulip: "assets/tulip_quilt.svg",
+    daisy: "assets/daisy_quilt.svg",
+    iris: "assets/iris_quilt.svg",
+    coneflower: "assets/pink_quilt.svg",
   };
 
   function useFirebaseSdk() {

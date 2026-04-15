@@ -205,12 +205,12 @@ body {
   column-gap: 10px;
   display: grid;
   grid-auto-rows: var(--index-row-h);
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   grid-template-rows: var(--index-row-1-h);
   flex-shrink: 0;
   padding-left: 8%;
   padding-right: 8%;
-  padding-top: var(--index-soil-start);
+  padding-top: calc(var(--index-soil-start) - 57px);
   padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px));
   pointer-events: auto;
   row-gap: var(--index-line-h);
@@ -234,6 +234,15 @@ body {
   object-fit: contain;
   transform: translateZ(0);
   transform-origin: center bottom;
+  width: auto;
+}
+
+/* Quilt SVGs: render at their intended size (don’t clamp to --index-flower-max) */
+.index-garden-tulip[src$=".svg"] {
+  image-rendering: auto;
+  max-height: none;
+  max-width: none;
+  height: 126px;
   width: auto;
 }
 
@@ -295,13 +304,24 @@ body {
 
 .index-new-timer-link {
   bottom: calc(20px + env(safe-area-inset-bottom, 0px));
-  display: block;
+  align-items: center;
+  background: #03480b;
+  border: 2px solid rgba(0, 0, 0, 0.8);
+  border-radius: 4px;
+  box-shadow: -4px 5px 0 rgba(0, 0, 0, 0.22);
+  color: #fff;
+  display: flex;
+  font-family: "p22-folk-art-block", "Pixelify Sans", sans-serif;
+  font-size: clamp(18px, 5.2vmin, 28px);
+  justify-content: center;
   left: 50%;
-  line-height: 0;
+  line-height: 1;
   position: absolute;
   transform: translateX(-50%);
   width: min(335px, calc(100% - 32px));
   z-index: 2;
+  padding: 14px 18px;
+  text-decoration: none;
 }
 
 .index-new-timer-link:focus-visible {
@@ -994,16 +1014,22 @@ a.timer-card--link {
 }
 
 .edit-timer-start-btn {
-  background: none;
-  border: none;
+  align-items: center;
+  background: #03480b;
+  border: 2px solid rgba(0, 0, 0, 0.8);
+  border-radius: 4px;
+  box-shadow: -3px 4px 0 rgba(0, 0, 0, 0.22);
+  color: #fff;
   cursor: pointer;
-  display: block;
-  filter: drop-shadow(-3px 4px 0 rgba(0, 0, 0, 0.2));
+  display: flex;
   flex-shrink: 0;
-  line-height: 0;
+  font-family: "p22-folk-art-block", "Pixelify Sans", sans-serif;
+  font-size: clamp(18px, 5.2vmin, 28px);
+  justify-content: center;
+  line-height: 1;
   margin-top: 2px;
   max-width: min(300px, 100%);
-  padding: 0;
+  padding: 14px 18px;
   width: 100%;
 }
 
@@ -1402,14 +1428,24 @@ a.timer-card--link {
 
 .anim-tulip-cancel-link {
   bottom: calc(22px + env(safe-area-inset-bottom, 0px));
-  display: block;
-  filter: drop-shadow(-3px 4px 0 rgba(0, 0, 0, 0.22));
+  align-items: center;
+  background: #03480b;
+  border: 2px solid rgba(0, 0, 0, 0.8);
+  border-radius: 4px;
+  box-shadow: -3px 4px 0 rgba(0, 0, 0, 0.22);
+  color: #fff;
+  display: flex;
+  font-family: "p22-folk-art-block", "Pixelify Sans", sans-serif;
+  font-size: clamp(18px, 5.2vmin, 28px);
+  justify-content: center;
   left: 50%;
-  line-height: 0;
+  line-height: 1;
   max-width: min(300px, calc(100% - 32px));
   position: absolute;
   transform: translateX(-50%);
   z-index: 3;
+  padding: 14px 18px;
+  text-decoration: none;
 }
 
 .anim-tulip-cancel-link:focus-visible {
@@ -1473,11 +1509,21 @@ a.timer-card--link {
 }
 
 .congrats-continue-link {
-  display: block;
-  filter: drop-shadow(-3px 4px 0 rgba(0, 0, 0, 0.2));
-  line-height: 0;
+  align-items: center;
+  background: #03480b;
+  border: 2px solid rgba(0, 0, 0, 0.8);
+  border-radius: 4px;
+  box-shadow: -3px 4px 0 rgba(0, 0, 0, 0.22);
+  color: #fff;
+  display: flex;
+  font-family: "p22-folk-art-block", "Pixelify Sans", sans-serif;
+  font-size: clamp(18px, 5.2vmin, 28px);
+  justify-content: center;
+  line-height: 1;
   margin-top: 12px;
   max-width: min(300px, 100%);
+  padding: 14px 18px;
+  text-decoration: none;
   width: 100%;
 }
 
