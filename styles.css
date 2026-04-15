@@ -1892,11 +1892,11 @@ a.timer-card--link {
   display: block;
   filter: drop-shadow(-3px 4px 0 rgba(0, 0, 0, 0.2));
   flex-shrink: 0;
-  height: min(220px, min(48vmin, calc(50dvh - 168px)));
+  height: min(240px, min(52vmin, calc(50dvh - 150px)));
   position: relative;
   transform: translateZ(0);
   transition: transform 140ms ease, filter 140ms ease;
-  width: min(200px, min(50vw, calc((50dvh - 168px) * 0.75)));
+  width: min(218px, min(54vw, calc((50dvh - 150px) * 0.75)));
 }
 
 .profile-pack-btn:hover .profile-pack-frame {
@@ -1957,8 +1957,8 @@ a.timer-card--link {
   display: block;
   height: auto;
   image-rendering: pixelated;
-  max-height: 100%;
-  max-width: 82%;
+  max-height: 63%;
+  max-width: 48%;
   object-fit: contain;
   width: auto;
 }
