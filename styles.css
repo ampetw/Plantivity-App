@@ -2073,10 +2073,10 @@ a.timer-card--link {
 .community-card-pack-frame {
   display: block;
   filter: drop-shadow(-2px 3px 0 rgba(0, 0, 0, 0.18));
-  height: min(180px, 46vmin);
+  height: min(210px, 54vmin);
   margin: 0 auto;
   position: relative;
-  width: min(160px, 46vw);
+  width: min(190px, 54vw);
 }
 
 .community-card-pack-bg {
@@ -2129,8 +2129,8 @@ a.timer-card--link {
   display: block;
   height: auto;
   image-rendering: pixelated;
-  max-height: 100%;
-  max-width: 88%;
+  max-height: 72%;
+  max-width: 54%;
   object-fit: contain;
   width: auto;
 }
