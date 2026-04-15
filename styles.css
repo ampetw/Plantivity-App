@@ -99,9 +99,9 @@ body {
   display: block;
   height: auto;
   image-rendering: pixelated;
-  max-width: 72px;
+  max-width: 144px;
   object-fit: contain;
-  width: 58px;
+  width: 116px;
 }
 
 .splash-title {
@@ -420,6 +420,27 @@ body {
   filter: drop-shadow(-4px 5px 0 rgba(0, 0, 0, 0.22));
 }
 
+.choose-timer-title {
+  align-items: center;
+  background: #0d4f14;
+  border: 2px solid #08380c;
+  box-sizing: border-box;
+  color: #fff;
+  display: flex;
+  font-family: "p22-folk-art-block", "Pixelify Sans", sans-serif;
+  font-size: clamp(18px, 5vmin, 26px);
+  font-weight: 500;
+  justify-content: center;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+  margin: 0 auto;
+  max-width: min(320px, 100%);
+  padding: 14px 16px;
+  text-align: center;
+  width: 100%;
+  box-shadow: -4px 5px 0 rgba(0, 0, 0, 0.22);
+}
+
 .choose-timer-grid {
   display: grid;
   flex: 1;
@@ -551,7 +572,7 @@ a.timer-card--link {
   display: block;
   height: auto;
   image-rendering: pixelated;
-  width: 48px;
+  width: 96px;
 }
 
 .view-timer-footer {
@@ -569,7 +590,7 @@ a.timer-card--link {
 }
 
 .view-timer-footer .choose-timer-leaf {
-  width: 64px;
+  width: 128px;
 }
 
 .view-timer-delete-link {
@@ -1603,7 +1624,7 @@ a.timer-card--link {
 }
 
 .profile-stack {
-  background-image: url("assets/background color 5.png");
+  background-image: url("assets/green.svg");
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
@@ -1634,6 +1655,27 @@ a.timer-card--link {
   margin: 0 auto;
   max-width: min(320px, 100%);
   width: 100%;
+}
+
+.community-title {
+  align-items: center;
+  background: #0d4f14;
+  border: 2px solid #08380c;
+  box-sizing: border-box;
+  color: #fff;
+  display: flex;
+  font-family: "p22-folk-art-block", "Pixelify Sans", sans-serif;
+  font-size: clamp(18px, 5vmin, 26px);
+  font-weight: 500;
+  justify-content: center;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+  margin: 0 auto;
+  max-width: min(320px, 100%);
+  padding: 14px 16px;
+  text-align: center;
+  width: 100%;
+  box-shadow: -4px 5px 0 rgba(0, 0, 0, 0.22);
 }
 
 .profile-auth-section {

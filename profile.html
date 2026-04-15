@@ -14,6 +14,13 @@
       <div class="profile-stack">
         <h1 class="profile-page-title">Profile Page</h1>
 
+        <div class="profile-signed-row" id="profile-signed-row" hidden>
+          <span class="profile-signed-email" id="profile-signed-email"></span>
+          <button type="button" class="profile-signout-btn" id="profile-auth-signout">
+            Sign out
+          </button>
+        </div>
+
         <div class="profile-mid" id="profile-editor-wrap">
         <div class="profile-uname-block">
           <button type="button" class="profile-uname-label-btn" id="profile-uname-label">
@@ -76,7 +83,7 @@
           <a class="choose-timer-leaf-link" href="my-garden.html">
             <img
               class="choose-timer-leaf"
-              src="assets/leaf logo 1.png"
+              src="assets/leaf logo.svg"
               alt="Back to garden"
               width="48"
               height="50"
@@ -97,8 +104,27 @@
         if (!PS) return;
 
         var editorWrap = document.getElementById("profile-editor-wrap");
+        var signedRow = document.getElementById("profile-signed-row");
+        var signedEmailEl = document.getElementById("profile-signed-email");
+        var btnSignout = document.getElementById("profile-auth-signout");
+
+        function applyAuthUi(user) {
+          var sdk = PS.useFirebaseSdk();
+          if (!sdk) {
+            if (signedRow) signedRow.hidden = true;
+            return;
+          }
+          if (user) {
+            if (signedRow) signedRow.hidden = false;
+            if (signedEmailEl)
+              signedEmailEl.textContent = user.email || "Signed in";
+          } else {
+            if (signedRow) signedRow.hidden = true;
+          }
+        }
 
         PS.onAuthStateChanged(function (user) {
+          applyAuthUi(user);
           if (user && PS.useFirebaseSdk()) {
             PS.pullRemoteProfileToLocal().then(function () {
               renderUname();
@@ -133,6 +159,16 @@
         var pickerGrid = document.getElementById("profile-picker-grid");
         var pickerClose = document.getElementById("profile-picker-close");
         var syncStatus = document.getElementById("profile-sync-status");
+
+        if (btnSignout) {
+          btnSignout.addEventListener("click", function () {
+            PS.signOutFirebase()
+              .catch(function () {})
+              .then(function () {
+                window.location.href = "index.html";
+              });
+          });
+        }
 
         function setSyncMessage(msg) {
           if (syncStatus) syncStatus.textContent = msg || "";
