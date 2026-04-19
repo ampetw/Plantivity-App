@@ -50,9 +50,8 @@ body {
 html,
 body,
 body * {
-  font-family: "p22-folk-art-cross", sans-serif !important;
-  font-weight: 400 !important;
-  font-style: normal !important;
+  font-family: "p22-folk-art-cross", "Pixelify Sans", system-ui, sans-serif;
+  font-style: normal;
 }
 
 /* Index (sign-in) — center auth card vertically */
