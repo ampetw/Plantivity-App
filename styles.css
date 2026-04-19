@@ -1324,7 +1324,7 @@ a.timer-card--link {
 .view-tulip-main .view-timer-meta-outer {
   margin-bottom: 8px;
   /* Down from top; transform keeps pack layout position unchanged */
-  transform: translateY(clamp(20px, 4.5vmin, 36px));
+  transform: translateY(clamp(8px, 2.6vmin, 16px));
 }
 
 .view-tulip-main .view-timer-meta-box {
@@ -1336,9 +1336,10 @@ a.timer-card--link {
 }
 
 .view-tulip-main .view-timer-artboard {
-  height: 664px;
+  height: min(600px, 66vh);
+  height: min(600px, 66dvh);
   margin-top: 4px;
-  transform: translateY(-58px);
+  transform: translateY(-80px);
 }
 
 .view-tulip-main .view-timer-title-wrap {
@@ -1358,7 +1359,7 @@ a.timer-card--link {
 .view-tulip-main .view-timer-flower-stage {
   margin-bottom: 8px;
   margin-top: 4px;
-  transform: translateY(clamp(24px, 5.5vmin, 42px));
+  transform: translateY(clamp(8px, 3vmin, 18px));
 }
 
 .view-tulip-main .view-timer-flower-hero {
@@ -1367,6 +1368,7 @@ a.timer-card--link {
 }
 
 .view-tulip-main .view-timer-footer {
+  bottom: calc(54px + env(safe-area-inset-bottom, 0px));
   gap: 18px;
   margin-bottom: 0;
   margin-top: 0;
