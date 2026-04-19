@@ -7,6 +7,9 @@
       content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
     <title>Delete flower — Plantivity</title>
+    <link rel="preconnect" href="https://use.typekit.net" crossorigin />
+    <link rel="preconnect" href="https://p.typekit.net" crossorigin />
+    <link rel="stylesheet" href="https://use.typekit.net/wxp5slh.css" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body class="choose-timer-body">
@@ -107,22 +110,23 @@
         }
 
         if (!flower || !id) {
-          window.location.replace("index.html");
+          window.location.replace("my-garden.html");
           return;
         }
 
         var gardenKey = getGardenKey(flower);
         if (!gardenKey) {
-          window.location.replace("index.html");
+          window.location.replace("my-garden.html");
           return;
         }
 
-        function cleanupAndRedirect() {
+        function cleanupAndRedirect(targetHref) {
           localStorage.removeItem("plantivityDeleteFlower");
           localStorage.removeItem("plantivityDeleteId");
           localStorage.removeItem("plantivityDeleteTitle");
           localStorage.removeItem("plantivityDeleteDescription");
-          window.location.href = "index.html";
+          localStorage.removeItem("plantivityDeleteReturnUrl");
+          window.location.href = targetHref || "my-garden.html";
         }
 
         var yesBtn = document.getElementById("delete-confirm-yes");
@@ -150,9 +154,11 @@
             localStorage.setItem(gardenKey, JSON.stringify(arr));
             var PS = window.PlantivitySocial;
             if (PS && typeof PS.syncMyGardenToCloud === "function") {
-              PS.syncMyGardenToCloud().finally(cleanupAndRedirect);
+              PS.syncMyGardenToCloud().finally(function () {
+                cleanupAndRedirect("my-garden.html");
+              });
             } else {
-              cleanupAndRedirect();
+              cleanupAndRedirect("my-garden.html");
             }
           });
         }
@@ -160,7 +166,9 @@
         if (noBtn) {
           noBtn.addEventListener("click", function (e) {
             e.preventDefault();
-            cleanupAndRedirect();
+            var back =
+              localStorage.getItem("plantivityDeleteReturnUrl") || "";
+            cleanupAndRedirect(back || "my-garden.html");
           });
         }
       })();
