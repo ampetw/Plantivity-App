@@ -10,7 +10,28 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body class="choose-timer-body">
-    <main class="choose-timer-main anim-tulip-main" aria-label="Daisy growing timer">
+    <main
+      class="choose-timer-main anim-tulip-main anim-daisy-main"
+      aria-label="Daisy growing timer"
+    >
+      <div class="anim-daisy-top-bar">
+        <div
+          class="anim-daisy-countdown"
+          role="timer"
+          aria-live="polite"
+          aria-atomic="true"
+          aria-label="Time remaining on daisy timer"
+        >
+          <span id="anim-daisy-countdown-text">5:00</span>
+        </div>
+        <a
+          class="anim-tulip-cancel-link anim-daisy-cancel-link"
+          id="anim-tulip-cancel"
+          href="choose timer.html"
+        >
+          Cancel Timer
+        </a>
+      </div>
       <svg
         class="anim-tulip-defs"
         width="0"
@@ -66,20 +87,13 @@
         </div>
         <div class="anim-tulip-tulip-wrap">
           <img
-            class="anim-tulip-flower"
-            src="assets/daisy_quilt.svg"
-            alt="Daisy"
+            id="anim-daisy-frame"
+            class="anim-tulip-flower anim-daisy-frame"
+            src="assets/rootgrowth/root%20and%20leaf-01.svg"
+            alt="Daisy growth frame"
           />
         </div>
       </div>
-
-      <a
-        class="anim-tulip-cancel-link"
-        id="anim-tulip-cancel"
-        href="choose timer.html"
-      >
-        Cancel Timer
-      </a>
     </main>
     <script>
       (function () {
@@ -115,8 +129,51 @@
         var iv = null;
         var finished = false;
 
+        var frameEl = document.getElementById("anim-daisy-frame");
+        var countdownEl = document.getElementById("anim-daisy-countdown-text");
+
+        var FRAMES = [];
+        var n;
+        for (n = 1; n <= 26; n += 1) {
+          FRAMES.push(
+            "assets/rootgrowth/root and leaf-" +
+              String(n).padStart(2, "0") +
+              ".svg"
+          );
+        }
+        for (n = 1; n <= 5; n += 1) {
+          FRAMES.push(
+            "assets/daisy/daisy_Artboard 19-" +
+              String(n).padStart(2, "0") +
+              ".svg"
+          );
+        }
+        var FRAME_COUNT = FRAMES.length;
+
         function clamp01(x) {
           return x < 0 ? 0 : x > 1 ? 1 : x;
+        }
+
+        function formatRemaining(msLeft) {
+          var sec = Math.floor(Math.max(0, msLeft) / 1000);
+          var m = Math.floor(sec / 60);
+          var s = sec % 60;
+          return m + ":" + String(s).padStart(2, "0");
+        }
+
+        function frameIndexForProgress(p) {
+          if (FRAME_COUNT <= 1) return 0;
+          if (p >= 1) return FRAME_COUNT - 1;
+          return Math.min(
+            FRAME_COUNT - 1,
+            Math.floor(p * FRAME_COUNT)
+          );
+        }
+
+        function applyFrame(i) {
+          if (!frameEl) return;
+          var path = FRAMES[i];
+          frameEl.src = encodeURI(path);
         }
 
         function finishNow() {
@@ -144,6 +201,11 @@
           var p = clamp01(elapsed / duration);
           root.style.setProperty("--tulip-t", String(p));
 
+          if (countdownEl) {
+            countdownEl.textContent = formatRemaining(duration - elapsed);
+          }
+          applyFrame(frameIndexForProgress(p));
+
           if (p >= 1) {
             finishNow();
             return;
@@ -151,6 +213,10 @@
         }
 
         iv = setInterval(tick, 200);
+        applyFrame(0);
+        if (countdownEl) {
+          countdownEl.textContent = formatRemaining(duration);
+        }
         tick();
 
         var rootBg = document.getElementById("anim-tulip-root-bg");

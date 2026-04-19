@@ -10,7 +10,28 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body class="choose-timer-body">
-    <main class="choose-timer-main anim-tulip-main" aria-label="Tulip growing timer">
+    <main
+      class="choose-timer-main anim-tulip-main anim-run-fullbleed"
+      aria-label="Tulip growing timer"
+    >
+      <div class="anim-run-top-bar">
+        <div
+          class="anim-run-countdown"
+          role="timer"
+          aria-live="polite"
+          aria-atomic="true"
+          aria-label="Time remaining on tulip timer"
+        >
+          <span id="anim-run-countdown-text">10:00</span>
+        </div>
+        <a
+          class="anim-tulip-cancel-link anim-run-cancel-link"
+          id="anim-tulip-cancel"
+          href="choose timer.html"
+        >
+          Cancel Timer
+        </a>
+      </div>
       <svg
         class="anim-tulip-defs"
         width="0"
@@ -66,20 +87,12 @@
         </div>
         <div class="anim-tulip-tulip-wrap">
           <img
-            class="anim-tulip-flower"
+            class="anim-tulip-flower anim-run-flower"
             src="assets/tulip_quilt.svg"
             alt="Tulip"
           />
         </div>
       </div>
-
-      <a
-        class="anim-tulip-cancel-link"
-        id="anim-tulip-cancel"
-        href="choose timer.html"
-      >
-        Cancel Timer
-      </a>
     </main>
     <script>
       (function () {
@@ -112,12 +125,20 @@
         var duration =
           parseInt(localStorage.getItem(durKey), 10) || DURATION;
         var root = document.documentElement;
+        var countdownEl = document.getElementById("anim-run-countdown-text");
 
         var iv = null;
         var finished = false;
 
         function clamp01(x) {
           return x < 0 ? 0 : x > 1 ? 1 : x;
+        }
+
+        function formatRemaining(msLeft) {
+          var sec = Math.floor(Math.max(0, msLeft) / 1000);
+          var m = Math.floor(sec / 60);
+          var s = sec % 60;
+          return m + ":" + String(s).padStart(2, "0");
         }
 
         function finishNow() {
@@ -145,6 +166,10 @@
           var p = clamp01(elapsed / duration);
           root.style.setProperty("--tulip-t", String(p));
 
+          if (countdownEl) {
+            countdownEl.textContent = formatRemaining(duration - elapsed);
+          }
+
           if (p >= 1) {
             finishNow();
             return;
@@ -152,6 +177,9 @@
         }
 
         iv = setInterval(tick, 200);
+        if (countdownEl) {
+          countdownEl.textContent = formatRemaining(duration);
+        }
         tick();
 
         var rootBg = document.getElementById("anim-tulip-root-bg");

@@ -3,8 +3,41 @@
 
 /* iPhone 14 Pro logical frame — same across index, splash, choose/view/edit, congrats, etc. */
 :root {
-  --app-frame-w: 393px;
-  --app-frame-h: 852px;
+  /*
+    Responsive “phone frame” sizing.
+    - Caps at the original design size (393×852)
+    - Shrinks to fit any smaller phone viewport (no horizontal overflow)
+  */
+  --app-frame-w: min(393px, 100vw);
+  --app-frame-h: min(852px, 100dvh);
+}
+
+/* Ensure the “phone frame” can go edge-to-edge on narrow screens */
+@media (max-width: 420px) {
+  .splash-body,
+  .index-body,
+  .choose-timer-body {
+    background: #07540c; /* avoid gray gutters when frame becomes full-bleed */
+  }
+
+  .splash-main,
+  .index-scroll,
+  .choose-timer-main {
+    border: 0;
+    box-shadow: none;
+    width: 100vw;
+    max-width: 100vw;
+  }
+
+  .splash-main,
+  .choose-timer-main {
+    height: 100dvh;
+    max-height: 100dvh;
+  }
+
+  .index-scroll {
+    max-height: 100dvh;
+  }
 }
 
 * {
@@ -557,6 +590,20 @@ a.timer-card--link {
   padding-top: 4px;
 }
 
+/* Keep leaf-logo footer visible without scrolling (choose timer screen). */
+.choose-timer-main:has(.choose-timer-stack) .choose-timer-stack {
+  padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+}
+
+.choose-timer-main:has(.choose-timer-stack) .choose-timer-footer {
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  margin-top: 0;
+  padding-top: 0;
+  position: absolute;
+  transform: translateX(-50%);
+}
+
 .choose-timer-leaf-link {
   display: block;
   line-height: 0;
@@ -795,6 +842,14 @@ a.timer-card--link {
   transform: translateX(-50%) scale(1.04);
 }
 
+.anim-tulip-main.anim-daisy-main .anim-daisy-cancel-link:hover {
+  transform: scale(1.04);
+}
+
+.anim-tulip-main .anim-run-cancel-link:hover {
+  transform: scale(1.04);
+}
+
 .choose-timer-leaf-link:hover,
 .view-timer-delete-link:hover {
   transform: scale(1.08);
@@ -826,6 +881,14 @@ a.timer-card--link {
 
   .anim-tulip-cancel-link:hover {
     transform: translateX(-50%);
+  }
+
+  .anim-tulip-main.anim-daisy-main .anim-daisy-cancel-link:hover {
+    transform: none;
+  }
+
+  .anim-tulip-main .anim-run-cancel-link:hover {
+    transform: none;
   }
 
   .choose-timer-leaf-link:hover,
@@ -1344,6 +1407,82 @@ a.timer-card--link {
   --tulip-t: 0;
   overflow: hidden;
   position: relative;
+}
+
+/* Timer animation: top bar (countdown + cancel) + full-bleed flower */
+.anim-run-top-bar,
+.anim-daisy-top-bar {
+  align-items: center;
+  background: rgba(3, 72, 11, 0.92);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.75);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.12);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  justify-content: space-between;
+  left: 0;
+  padding: calc(12px + env(safe-area-inset-top, 0px)) 16px 12px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 100%;
+  z-index: 7;
+}
+
+.anim-run-countdown,
+.anim-daisy-countdown {
+  align-items: center;
+  color: #fff;
+  display: flex;
+  flex: 1 1 auto;
+  font-family: "p22-folk-art-block", "Pixelify Sans", sans-serif;
+  font-size: clamp(22px, 6vmin, 32px);
+  font-weight: 500;
+  justify-content: flex-start;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  min-width: 0;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+}
+
+.anim-tulip-main.anim-daisy-main .anim-tulip-tulip-wrap,
+.anim-tulip-main.anim-run-fullbleed .anim-tulip-tulip-wrap {
+  height: 100%;
+  inset: 0;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  transform: none;
+  width: 100%;
+  z-index: 4;
+}
+
+.anim-tulip-main.anim-daisy-main .anim-tulip-flower.anim-daisy-frame,
+.anim-tulip-main.anim-run-fullbleed .anim-tulip-flower.anim-run-flower {
+  display: block;
+  height: 100%;
+  image-rendering: auto;
+  margin: 0;
+  max-height: none;
+  object-fit: cover;
+  object-position: center center;
+  transform: none;
+  width: 100%;
+}
+
+.anim-tulip-main.anim-daisy-main .anim-tulip-cancel-link.anim-daisy-cancel-link,
+.anim-tulip-main .anim-tulip-cancel-link.anim-run-cancel-link {
+  bottom: auto;
+  flex: 0 0 auto;
+  font-size: clamp(14px, 3.8vmin, 22px);
+  left: auto;
+  max-width: min(200px, 46%);
+  padding: 10px 14px;
+  position: relative;
+  transform: none;
+  z-index: auto;
 }
 
 .anim-tulip-scene {
@@ -1989,8 +2128,24 @@ a.timer-card--link {
   padding-top: 8px;
 }
 
+.profile-stack,
+.community-stack {
+  padding-bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+}
+
+.profile-footer,
+.community-footer {
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  margin-top: 0;
+  padding-bottom: 0;
+  padding-top: 0;
+  position: absolute;
+  transform: translateX(-50%);
+}
+
 .profile-footer {
-  padding-top: calc(12px + env(safe-area-inset-bottom, 0px) * 0.35);
+  padding-top: 0;
 }
 
 .profile-picker {
