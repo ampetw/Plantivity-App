@@ -575,8 +575,8 @@ a.timer-card--link {
   display: block;
   height: auto;
   image-rendering: pixelated;
-  max-height: 100%;
-  max-width: 88%;
+  max-height: 74%;
+  max-width: 74%;
   object-fit: contain;
   width: auto;
 }
