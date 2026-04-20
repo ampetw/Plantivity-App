@@ -2242,12 +2242,11 @@ a.timer-card--link {
 }
 
 .community-grid {
-  column-gap: 14px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   flex: 0 1 auto;
-  row-gap: 14px;
-  width: min(340px, 100%);
+  row-gap: clamp(14px, 3.5vmin, 22px);
+  width: min(360px, 100%);
 }
 
 .community-card-link {
@@ -2277,10 +2276,10 @@ a.timer-card--link {
 .community-card-pack-frame {
   display: block;
   filter: drop-shadow(-2px 3px 0 rgba(0, 0, 0, 0.18));
-  height: min(210px, 54vmin);
+  height: min(340px, 84vmin);
   margin: 0 auto;
   position: relative;
-  width: min(190px, 54vw);
+  width: min(310px, 86vw);
 }
 
 .community-card-pack-bg {
@@ -2309,7 +2308,7 @@ a.timer-card--link {
   align-self: center;
   color: #0d3d0d;
   font-family: "p22-folk-art-block", sans-serif;
-  font-size: clamp(11px, 2.8vmin, 13px);
+  font-size: clamp(14px, 3.6vmin, 18px);
   line-height: 1.15;
   max-width: 100%;
   overflow: hidden;
