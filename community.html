@@ -104,7 +104,9 @@
           if (!cardW) return;
           var maxIndex = Math.max(0, grid.children.length - 1);
           var curIndex = Math.round(viewport.scrollLeft / cardW);
-          var nextIndex = Math.max(0, Math.min(maxIndex, curIndex + dir));
+          var nextIndex = curIndex + dir;
+          if (nextIndex > maxIndex) nextIndex = 0;
+          if (nextIndex < 0) nextIndex = maxIndex;
           viewport.scrollTo({ left: nextIndex * cardW, behavior: "smooth" });
         }
 
