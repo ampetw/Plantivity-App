@@ -17,6 +17,10 @@
     background: #07540c; /* avoid gray gutters when frame becomes full-bleed */
   }
 
+  body {
+    font-size: 18px;
+  }
+
   .splash-main,
   .index-scroll,
   .choose-timer-main {
@@ -43,6 +47,7 @@
 
 body {
   margin: 0;
+  font-size: 16px;
 }
 
 html,
@@ -558,7 +563,7 @@ a.timer-card--link {
 .timer-card-duration {
   align-self: center;
   color: #0d3d0d;
-  font-size: clamp(11px, 3.2vmin, 15px);
+  font-size: clamp(13px, 3.4vmin, 17px);
   font-weight: 500;
   letter-spacing: 0.02em;
   line-height: 1.1;
@@ -737,7 +742,7 @@ a.timer-card--link {
 .delete-confirm-pack-description {
   color: #0d3d0d;
   font-family: "p22-folk-art-block", sans-serif;
-  font-size: clamp(11px, 3.2vmin, 14px);
+  font-size: clamp(13px, 3.4vmin, 16px);
   font-weight: 500;
   line-height: 1.35;
   padding: 3% 7.5% 11% 7.5%;
@@ -1079,7 +1084,7 @@ a.timer-card--link {
   color: #0d3d0d;
   flex: 1 1 auto;
   font-family: "p22-folk-art-block", sans-serif;
-  font-size: clamp(11px, 3.2vmin, 14px);
+  font-size: clamp(13px, 3.4vmin, 16px);
   font-weight: 500;
   line-height: 1.35;
   min-height: 0;
@@ -1280,7 +1285,7 @@ a.timer-card--link {
   color: #0d3d0d;
   flex: 1;
   font-family: "p22-folk-art-block", sans-serif;
-  font-size: clamp(11px, 3.2vmin, 14px);
+  font-size: clamp(13px, 3.4vmin, 16px);
   font-weight: 500;
   line-height: 1.35;
   min-height: 0;
@@ -2241,19 +2246,93 @@ a.timer-card--link {
   text-align: center;
 }
 
-.community-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  flex: 0 1 auto;
-  row-gap: clamp(14px, 3.5vmin, 22px);
+.community-carousel {
+  align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  position: relative;
   width: min(360px, 100%);
+}
+
+.community-carousel-viewport {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-padding-inline: 0px;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.community-carousel-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.community-carousel-viewport:focus-visible {
+  border-radius: 6px;
+  outline: 3px solid #0a6b12;
+  outline-offset: 4px;
+}
+
+.community-carousel-btn {
+  align-items: center;
+  background: rgba(3, 72, 11, 0.9);
+  border: 2px solid rgba(0, 0, 0, 0.75);
+  border-radius: 10px;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.18);
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-family: "p22-folk-art-block", sans-serif;
+  font-size: 22px;
+  height: 44px;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  z-index: 2;
+}
+
+.community-carousel-btn--prev {
+  left: 6px;
+}
+
+.community-carousel-btn--next {
+  right: 6px;
+}
+
+.community-carousel-btn:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.community-carousel-btn:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+
+.community-grid {
+  display: flex;
+  flex: 0 1 auto;
+  gap: 0;
+  width: 100%;
 }
 
 .community-card-link {
   -webkit-tap-highlight-color: transparent;
   color: inherit;
   display: block;
+  flex: 0 0 100%;
   min-width: 0;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
   text-decoration: none;
 }
 

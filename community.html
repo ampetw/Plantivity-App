@@ -28,7 +28,35 @@
 
         <div class="community-mid">
           <p class="community-status" id="community-status" aria-live="polite"></p>
-          <div class="community-grid" id="community-grid"></div>
+          <section
+            class="community-carousel"
+            aria-label="Community profile carousel"
+            aria-roledescription="carousel"
+          >
+            <button
+              type="button"
+              class="community-carousel-btn community-carousel-btn--prev"
+              aria-label="Previous profile"
+              aria-controls="community-grid-viewport"
+            >
+              ‹
+            </button>
+            <div
+              class="community-carousel-viewport"
+              id="community-grid-viewport"
+              tabindex="0"
+            >
+              <div class="community-grid" id="community-grid"></div>
+            </div>
+            <button
+              type="button"
+              class="community-carousel-btn community-carousel-btn--next"
+              aria-label="Next profile"
+              aria-controls="community-grid-viewport"
+            >
+              ›
+            </button>
+          </section>
         </div>
 
         <footer class="choose-timer-footer community-footer">
@@ -54,8 +82,42 @@
       (function () {
         var PS = window.PlantivitySocial;
         var grid = document.getElementById("community-grid");
+        var viewport = document.getElementById("community-grid-viewport");
+        var prevBtn = document.querySelector(".community-carousel-btn--prev");
+        var nextBtn = document.querySelector(".community-carousel-btn--next");
         var statusEl = document.getElementById("community-status");
         if (!PS || !grid) return;
+
+        function updateCarouselUi() {
+          if (!viewport || !prevBtn || !nextBtn) return;
+          var items = grid ? grid.children.length : 0;
+          var canNav = items > 1;
+          prevBtn.disabled = !canNav;
+          nextBtn.disabled = !canNav;
+          prevBtn.hidden = !canNav;
+          nextBtn.hidden = !canNav;
+        }
+
+        function scrollCarouselBy(dir) {
+          if (!viewport || !grid) return;
+          var cardW = viewport.clientWidth || 0;
+          if (!cardW) return;
+          var maxIndex = Math.max(0, grid.children.length - 1);
+          var curIndex = Math.round(viewport.scrollLeft / cardW);
+          var nextIndex = Math.max(0, Math.min(maxIndex, curIndex + dir));
+          viewport.scrollTo({ left: nextIndex * cardW, behavior: "smooth" });
+        }
+
+        if (prevBtn) {
+          prevBtn.addEventListener("click", function () {
+            scrollCarouselBy(-1);
+          });
+        }
+        if (nextBtn) {
+          nextBtn.addEventListener("click", function () {
+            scrollCarouselBy(1);
+          });
+        }
 
         function card(profile) {
           var link = document.createElement("a");
@@ -130,11 +192,14 @@
               if (others.length < 1) {
                 statusEl.textContent =
                   "No other gardeners yet. Ask friends to create an account and set a username on Profile.";
+                updateCarouselUi();
                 return;
               }
               for (var i = 0; i < others.length; i += 1) {
                 grid.appendChild(card(others[i]));
               }
+              if (viewport) viewport.scrollLeft = 0;
+              updateCarouselUi();
             })
             .catch(function (err) {
               if (err && err.message === "auth_required") {
