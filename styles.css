@@ -105,7 +105,7 @@ body * {
 
 .splash-main {
   background: #07540c;
-  border: 1px solid #000;
+  border: none;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   height: min(var(--app-frame-h), 100vh);
   height: min(var(--app-frame-h), 100dvh);
@@ -170,7 +170,7 @@ body * {
 
 /* Scrollable phone frame — visible height matches other screens (≤ 852, ≤ viewport) */
 .index-scroll {
-  border: 1px solid #000;
+  border: none;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   max-height: min(var(--app-frame-h), 100vh);
   max-height: min(var(--app-frame-h), 100dvh);
@@ -391,7 +391,7 @@ body * {
 }
 
 .choose-timer-main {
-  border: 1px solid #000;
+  border: none;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   height: min(var(--app-frame-h), 100vh);
   height: min(var(--app-frame-h), 100dvh);
