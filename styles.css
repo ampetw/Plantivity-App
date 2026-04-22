@@ -217,15 +217,12 @@ body * {
   width: 100%;
 }
 
-/* Soil bands below the hero bitmap (matches brown / dark-line rhythm of the asset) */
+/* Extra space below the hero bitmap when the garden grows */
 .index-bg-soil-extension {
-  background: repeating-linear-gradient(
-    to bottom,
-    #ad816d 0,
-    #ad816d var(--index-row-h),
-    #8a6654 var(--index-row-h),
-    #8a6654 calc(var(--index-row-h) + var(--index-line-h))
-  );
+  background-image: url("assets/green%20background.svg");
+  background-position: top center;
+  background-repeat: repeat-y;
+  background-size: 100% auto;
   bottom: 0;
   image-rendering: pixelated;
   left: 0;
@@ -1625,13 +1622,13 @@ a.timer-card--link {
 }
 
 .congrats-heading {
-  color: #fff;
+  color: #08380c;
   font-family: "p22-folk-art-block", sans-serif;
   font-size: clamp(26px, 7vmin, 34px);
   font-weight: 500;
   line-height: 1.15;
   margin: 0;
-  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 .congrats-tulip {
@@ -1643,14 +1640,14 @@ a.timer-card--link {
 }
 
 .congrats-message {
-  color: #fff;
+  color: #08380c;
   font-family: "p22-folk-art-block", sans-serif;
   font-size: clamp(15px, 4vmin, 19px);
   font-weight: 500;
   line-height: 1.35;
   margin: 0;
   max-width: 320px;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .congrats-accent {
