@@ -11,10 +11,10 @@
   ];
 
   var DEFAULT_DURATION_MS = {
-    tulip: 600000,
-    daisy: 300000,
-    iris: 1800000,
-    coneflower: 3600000,
+    tulip: 60000,
+    daisy: 30000,
+    iris: 300000,
+    coneflower: 600000,
   };
 
   var FLOWER_IMG = {
@@ -212,13 +212,24 @@
   }
 
   function formatGardenDuration(totalMs) {
-    var m = Math.round(totalMs / 60000);
-    if (m <= 0) return "0 min";
-    if (m < 60) return m + " min";
+    var sec = Math.round(Math.max(0, totalMs) / 1000);
+    if (sec <= 0) return "0 sec";
+
+    if (sec < 60) return sec + " sec";
+
+    var m = Math.floor(sec / 60);
+    var s = sec % 60;
+    if (m < 60) {
+      if (s === 0) return m + " min";
+      return m + " min " + s + " sec";
+    }
+
     var h = Math.floor(m / 60);
-    var r = m % 60;
-    if (r === 0) return h + (h === 1 ? " hr" : " hrs");
-    return h + " hr " + r + " min";
+    var rm = m % 60;
+    if (rm === 0 && s === 0) return h + (h === 1 ? " hr" : " hrs");
+    if (s === 0) return h + " hr " + rm + " min";
+    if (rm === 0) return h + " hr " + s + " sec";
+    return h + " hr " + rm + " min " + s + " sec";
   }
 
   function getOrCreateDeviceId() {
