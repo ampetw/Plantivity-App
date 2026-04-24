@@ -274,6 +274,56 @@ body * {
   transition: opacity 600ms ease;
 }
 
+/* Sky decorations (sun / sunset sun / moon) */
+.index-bg-stack::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: var(--index-soil-start);
+  pointer-events: none;
+  z-index: 3; /* above tint overlay */
+  opacity: 0;
+  transition: opacity 600ms ease;
+  background-repeat: no-repeat;
+}
+
+.index-body.sky-day .index-bg-stack::after,
+.index-body.sky-sunrise .index-bg-stack::after,
+.index-body.sky-sunset .index-bg-stack::after,
+.index-body.sky-night .index-bg-stack::after {
+  opacity: 1;
+}
+
+.index-body.sky-day .index-bg-stack::after {
+  /* Sun high in the sky */
+  background-image:
+    radial-gradient(circle at 78% 22%, rgba(255, 252, 210, 0.95) 0 18px, rgba(255, 240, 160, 0.55) 19px 36px, rgba(255, 255, 255, 0) 37px);
+}
+
+.index-body.sky-sunrise .index-bg-stack::after {
+  /* Rising sun near horizon */
+  background-image:
+    radial-gradient(circle at 22% 55%, rgba(255, 245, 200, 0.92) 0 16px, rgba(255, 205, 140, 0.55) 17px 34px, rgba(255, 255, 255, 0) 35px);
+}
+
+.index-body.sky-sunset .index-bg-stack::after {
+  /* Setting sun near horizon */
+  background-image:
+    radial-gradient(circle at 78% 58%, rgba(255, 235, 170, 0.92) 0 16px, rgba(255, 170, 120, 0.55) 17px 34px, rgba(255, 255, 255, 0) 35px);
+}
+
+.index-body.sky-night .index-bg-stack::after {
+  /* Moon + faint stars */
+  background-image:
+    radial-gradient(circle at 74% 28%, rgba(245, 243, 220, 0.92) 0 14px, rgba(245, 243, 220, 0.28) 15px 30px, rgba(255, 255, 255, 0) 31px),
+    radial-gradient(circle at 18% 24%, rgba(255, 255, 255, 0.55) 0 1px, rgba(255, 255, 255, 0) 2px),
+    radial-gradient(circle at 34% 40%, rgba(255, 255, 255, 0.35) 0 1px, rgba(255, 255, 255, 0) 2px),
+    radial-gradient(circle at 52% 18%, rgba(255, 255, 255, 0.45) 0 1px, rgba(255, 255, 255, 0) 2px),
+    radial-gradient(circle at 62% 46%, rgba(255, 255, 255, 0.3) 0 1px, rgba(255, 255, 255, 0) 2px);
+}
+
 /* Day / sunset / night / sunrise (local time) */
 .index-body.sky-day .index-bg-stack::before,
 .index-body.sky-sunset .index-bg-stack::before,
