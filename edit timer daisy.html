@@ -90,14 +90,14 @@
             flower: "daisy",
             title: titleEl ? titleEl.value : "",
             description: descEl ? descEl.value : "",
-            durationMs: 300000,
+            durationMs: 30000,
             createdAt: Date.now(),
           };
           localStorage.setItem("plantivityPendingDaisy", JSON.stringify(pending));
           localStorage.removeItem("plantivityDaisyPendingRewardId");
 
           localStorage.setItem("plantivityDaisyRunStart", String(Date.now()));
-          localStorage.setItem("plantivityDaisyRunDurationMs", "300000");
+          localStorage.setItem("plantivityDaisyRunDurationMs", "30000");
           localStorage.setItem(
             "plantivityDaisyTitle",
             titleEl ? titleEl.value : ""

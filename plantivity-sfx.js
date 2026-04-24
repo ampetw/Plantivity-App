@@ -28,55 +28,110 @@
     return ctx.currentTime;
   }
 
-  function playHappyTune() {
+  function playFlowerNote() {
     ensureAudio();
     if (!ctx || !master) return;
 
     var t0 = now();
-    var notes = [523.25, 659.25, 783.99, 1046.5]; // C5 E5 G5 C6
-    var dur = 0.95;
 
-    // Soft pluck-like tone: triangle -> lowpass -> envelope
+    // Pick a pleasant note each click (C major pentatonic-ish).
+    var choices = [523.25, 587.33, 659.25, 783.99, 880.0, 1046.5]; // C5 D5 E5 G5 A5 C6
+    var freq = choices[Math.floor(Math.random() * choices.length)];
+
     var filter = ctx.createBiquadFilter();
     filter.type = "lowpass";
-    filter.frequency.setValueAtTime(2400, t0);
-    filter.Q.setValueAtTime(0.7, t0);
+    filter.frequency.setValueAtTime(2600, t0);
+    filter.Q.setValueAtTime(0.8, t0);
     filter.connect(master);
 
-    for (var i = 0; i < notes.length; i += 1) {
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.type = "triangle";
+
+    var dur = 0.22;
+    osc.frequency.setValueAtTime(freq, t0);
+    // tiny “pluck” drop
+    osc.frequency.exponentialRampToValueAtTime(freq * 0.994, t0 + dur);
+
+    gain.gain.setValueAtTime(0.0001, t0);
+    gain.gain.exponentialRampToValueAtTime(0.22, t0 + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+
+    osc.connect(gain);
+    gain.connect(filter);
+    osc.start(t0);
+    osc.stop(t0 + dur + 0.03);
+  }
+
+  function playCongratsTune() {
+    ensureAudio();
+    if (!ctx || !master) return;
+
+    var t0 = now();
+
+    // 4-ish second “victory” phrase: C major with a gentle arpeggio + cadence.
+    // (kept simple so it sounds good with WebAudio synths)
+    var seq = [
+      // freq, startOffset, length, gain
+      [523.25, 0.0, 0.32, 0.22], // C5
+      [659.25, 0.26, 0.32, 0.22], // E5
+      [783.99, 0.52, 0.32, 0.22], // G5
+      [1046.5, 0.78, 0.42, 0.24], // C6
+
+      [987.77, 1.18, 0.26, 0.18], // B5
+      [880.0, 1.40, 0.28, 0.18], // A5
+      [783.99, 1.64, 0.32, 0.18], // G5
+      [659.25, 1.92, 0.34, 0.18], // E5
+
+      [783.99, 2.24, 0.30, 0.20], // G5
+      [880.0, 2.50, 0.30, 0.20], // A5
+      [987.77, 2.76, 0.30, 0.20], // B5
+      [1046.5, 3.02, 0.60, 0.26], // C6 hold
+    ];
+
+    var filter = ctx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.frequency.setValueAtTime(2600, t0);
+    filter.Q.setValueAtTime(0.75, t0);
+    filter.connect(master);
+
+    for (var i = 0; i < seq.length; i += 1) {
+      var n = seq[i];
+      var freq = n[0];
+      var start = t0 + n[1];
+      var len = n[2];
+      var peak = n[3];
+      var end = start + len;
+
       var osc = ctx.createOscillator();
       var gain = ctx.createGain();
       osc.type = "triangle";
 
-      var start = t0 + i * 0.14;
-      var end = start + 0.22;
-
-      osc.frequency.setValueAtTime(notes[i], start);
-      // quick pitch dip for a “bouncy” feel
-      osc.frequency.exponentialRampToValueAtTime(notes[i] * 0.992, end);
+      osc.frequency.setValueAtTime(freq, start);
+      osc.frequency.exponentialRampToValueAtTime(freq * 0.996, end);
 
       gain.gain.setValueAtTime(0.0001, start);
-      gain.gain.exponentialRampToValueAtTime(0.22, start + 0.02);
+      gain.gain.exponentialRampToValueAtTime(peak, start + 0.02);
       gain.gain.exponentialRampToValueAtTime(0.0001, end);
 
       osc.connect(gain);
       gain.connect(filter);
       osc.start(start);
-      osc.stop(end + 0.03);
+      osc.stop(end + 0.04);
     }
 
-    // Tiny bell sparkle at the end.
-    var bellOsc = ctx.createOscillator();
-    var bellGain = ctx.createGain();
-    bellOsc.type = "sine";
-    bellOsc.frequency.setValueAtTime(1567.98, t0 + 0.62); // G6-ish
-    bellGain.gain.setValueAtTime(0.0001, t0 + 0.62);
-    bellGain.gain.exponentialRampToValueAtTime(0.12, t0 + 0.64);
-    bellGain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-    bellOsc.connect(bellGain);
-    bellGain.connect(master);
-    bellOsc.start(t0 + 0.62);
-    bellOsc.stop(t0 + dur + 0.03);
+    // Soft sparkle layer throughout (very low volume).
+    var sparkle = ctx.createOscillator();
+    var sparkleGain = ctx.createGain();
+    sparkle.type = "sine";
+    sparkle.frequency.setValueAtTime(2093.0, t0 + 0.6); // C7-ish
+    sparkleGain.gain.setValueAtTime(0.0001, t0 + 0.6);
+    sparkleGain.gain.exponentialRampToValueAtTime(0.05, t0 + 0.66);
+    sparkleGain.gain.exponentialRampToValueAtTime(0.0001, t0 + 3.9);
+    sparkle.connect(sparkleGain);
+    sparkleGain.connect(master);
+    sparkle.start(t0 + 0.6);
+    sparkle.stop(t0 + 4.0);
   }
 
   function playLeafCrunch() {
@@ -145,6 +200,29 @@
     );
   }
 
+  function isCongratsPage() {
+    return Boolean(document.querySelector(".congrats-stack"));
+  }
+
+  function tryAutoplayCongrats() {
+    if (!isCongratsPage()) return;
+    // Attempt immediately; if blocked (suspended), we’ll try on first interaction.
+    try {
+      playCongratsTune();
+    } catch (e) {}
+
+    function onFirstTap() {
+      document.removeEventListener("pointerdown", onFirstTap, true);
+      document.removeEventListener("touchstart", onFirstTap, true);
+      document.removeEventListener("click", onFirstTap, true);
+      playCongratsTune();
+    }
+
+    document.addEventListener("pointerdown", onFirstTap, true);
+    document.addEventListener("touchstart", onFirstTap, true);
+    document.addEventListener("click", onFirstTap, true);
+  }
+
   function isButtonClick(target) {
     if (!target) return false;
     if (target.closest(".index-garden-tulip-link, .timer-card--link")) return false;
@@ -170,7 +248,7 @@
       if (!t) return;
 
       if (isFlowerClick(t)) {
-        playHappyTune();
+        playFlowerNote();
         return;
       }
 
@@ -181,10 +259,17 @@
     { capture: true }
   );
 
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", tryAutoplayCongrats);
+  } else {
+    tryAutoplayCongrats();
+  }
+
   // Expose for debugging / manual triggers.
   window.PlantivitySfx = {
-    playHappyTune: playHappyTune,
+    playFlowerNote: playFlowerNote,
     playLeafCrunch: playLeafCrunch,
+    playCongratsTune: playCongratsTune,
   };
 })();
 

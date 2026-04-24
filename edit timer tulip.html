@@ -90,14 +90,14 @@
             flower: "tulip",
             title: titleEl ? titleEl.value : "",
             description: descEl ? descEl.value : "",
-            durationMs: 600000,
+            durationMs: 60000,
             createdAt: Date.now(),
           };
           localStorage.setItem("plantivityPendingTulip", JSON.stringify(pending));
           localStorage.removeItem("plantivityTulipPendingRewardId");
 
           localStorage.setItem("plantivityTulipRunStart", String(Date.now()));
-          localStorage.setItem("plantivityTulipRunDurationMs", "600000");
+          localStorage.setItem("plantivityTulipRunDurationMs", "60000");
           localStorage.setItem(
             "plantivityTulipTitle",
             titleEl ? titleEl.value : ""

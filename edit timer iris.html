@@ -90,14 +90,14 @@
             flower: "iris",
             title: titleEl ? titleEl.value : "",
             description: descEl ? descEl.value : "",
-            durationMs: 1800000,
+            durationMs: 300000,
             createdAt: Date.now(),
           };
           localStorage.setItem("plantivityPendingIris", JSON.stringify(pending));
           localStorage.removeItem("plantivityIrisPendingRewardId");
 
           localStorage.setItem("plantivityIrisRunStart", String(Date.now()));
-          localStorage.setItem("plantivityIrisRunDurationMs", "1800000");
+          localStorage.setItem("plantivityIrisRunDurationMs", "300000");
           localStorage.setItem(
             "plantivityIrisTitle",
             titleEl ? titleEl.value : ""
