@@ -731,7 +731,7 @@ a.timer-card--link {
   line-height: 1.1;
   text-align: center;
   /* Nudge down to sit between the top dark brown lines on pack.png */
-  transform: translateY(clamp(6px, 2vmin, 11px));
+  transform: translateY(calc(clamp(6px, 2vmin, 11px) + 9px));
 }
 
 .timer-card-flower-wrap {
