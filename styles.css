@@ -18,7 +18,46 @@
   }
 
   body {
-    font-size: 18px;
+    font-size: 19px;
+    /* Make all text a bit more readable on phones (incl. px/clamp text). */
+    -webkit-text-size-adjust: 115%;
+    text-size-adjust: 115%;
+  }
+
+  /* Smallest UI text bumps (keeps layout stable but improves legibility). */
+  .timer-card-duration {
+    font-size: clamp(14px, 3.6vmin, 18px);
+  }
+
+  .delete-confirm-pack-title,
+  .edit-timer-title-input,
+  .view-timer-title {
+    font-size: clamp(15px, 4.2vmin, 19px);
+  }
+
+  .delete-confirm-pack-description,
+  .edit-timer-description-input,
+  .view-timer-description {
+    font-size: clamp(14px, 3.8vmin, 17px);
+  }
+
+  .profile-auth-intro,
+  .profile-auth-error,
+  .profile-signed-email,
+  .profile-signout-btn,
+  .profile-pack-tag,
+  .profile-picker-title,
+  .profile-picker-close,
+  .community-status,
+  .index-visitor-empty,
+  .profile-auth-forgot,
+  .forgot-password-intro,
+  .forgot-password-success {
+    font-size: clamp(14px, 3.6vmin, 16px);
+  }
+
+  .profile-auth-btn {
+    font-size: 15px;
   }
 
   .splash-main,
@@ -953,15 +992,17 @@ a.timer-card--link {
   left: 50%;
   margin-top: 0;
   position: absolute;
-  top: calc(22px + env(safe-area-inset-top, 0px));
+  top: auto;
+  bottom: calc(22px + env(safe-area-inset-bottom, 0px));
   transform: translateX(-50%);
 }
 
 .choose-timer-main:has(.edit-timer-stack) .edit-timer-stack .choose-timer-footer {
-  bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  bottom: auto;
   left: 50%;
   margin-top: 0;
   position: absolute;
+  top: calc(14px + env(safe-area-inset-top, 0px));
   transform: translateX(-50%);
 }
 
