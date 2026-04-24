@@ -122,6 +122,22 @@ body * {
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
+/* Time-of-day accents for Public Garden title */
+.index-body.sky-night .public-garden-title {
+  color: #f6ee9a; /* pastel yellow */
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.28);
+}
+
+.index-body.sky-sunrise .public-garden-title,
+.index-body.sky-sunset .public-garden-title {
+  /* Gradient between original and pastel yellow */
+  background: linear-gradient(90deg, #08380c 0%, #f6ee9a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
 .splash-body {
   align-items: center;
   background: #f6f6f6;
@@ -242,6 +258,66 @@ body * {
   right: 0;
   top: 0;
   z-index: 0;
+}
+
+/* Sky tint overlay (only above soil line) */
+.index-bg-stack::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: var(--index-soil-start);
+  pointer-events: none;
+  z-index: 2; /* above bg image, below foreground content */
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+
+/* Day / sunset / night / sunrise (local time) */
+.index-body.sky-day .index-bg-stack::before,
+.index-body.sky-sunset .index-bg-stack::before,
+.index-body.sky-night .index-bg-stack::before,
+.index-body.sky-sunrise .index-bg-stack::before {
+  opacity: 1;
+  mix-blend-mode: multiply;
+}
+
+.index-body.sky-day .index-bg-stack::before {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.42) 0%,
+    rgba(180, 235, 255, 0.22) 55%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+.index-body.sky-sunrise .index-bg-stack::before {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 214, 165, 0.55) 0%,
+    rgba(255, 165, 210, 0.28) 55%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+.index-body.sky-sunset .index-bg-stack::before {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 170, 120, 0.55) 0%,
+    rgba(210, 120, 255, 0.26) 55%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+.index-body.sky-night .index-bg-stack::before {
+  background: linear-gradient(
+    180deg,
+    rgba(30, 44, 90, 0.72) 0%,
+    rgba(20, 30, 60, 0.42) 60%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  mix-blend-mode: multiply;
 }
 
 .index-garden-bg {
@@ -1760,6 +1836,19 @@ a.timer-card--link {
   image-rendering: pixelated;
   object-fit: contain;
   width: 100%;
+}
+
+/* Time-of-day icon recolor for My Garden top icons */
+.index-body.sky-night .index-top-icon-link img {
+  /* Approximate pastel yellow via CSS filter */
+  filter: brightness(0) saturate(100%) invert(93%) sepia(26%) saturate(654%)
+    hue-rotate(6deg) brightness(106%) contrast(95%);
+}
+
+.index-body.sky-sunrise .index-top-icon-link img,
+.index-body.sky-sunset .index-top-icon-link img {
+  filter: brightness(0) saturate(100%) invert(90%) sepia(18%) saturate(520%)
+    hue-rotate(8deg) brightness(108%) contrast(92%);
 }
 
 /* Profile + Community (same full-bleed bg as choose timer) */
